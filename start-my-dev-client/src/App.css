@@ -1,12 +1,12 @@
 body {
-  font-family: 'Oxygen', sans-serif !important;
+  font-family: "Oxygen", sans-serif !important;
 }
 
 .card.dark-mode {
   background-color: #1e1e1e;
   border-color: #333;
-} */
-
+}
+*/
 
 /* Light Theme */
 .light-mode {
@@ -65,4 +65,72 @@ body {
 .dark-mode .btn-light {
   background-color: #eee;
   color: #000;
+}
+
+/* DARK MODE GLOBAL TEXT COLOR */
+.dark-mode,
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6,
+.dark-mode p,
+.dark-mode span,
+.dark-mode li,
+.dark-mode a,
+.dark-mode .fw-semibold,
+.dark-mode .text-muted {
+  color: #f8f9fa !important; /* force light text */
+}
+
+/* OPTIONAL: Override specific Bootstrap link behavior */
+.dark-mode a {
+  color: #f8f9fa !important;
+  text-decoration: none;
+}
+
+.dark-mode a:hover {
+  color: #cccccc !important; /* Slightly dimmed on hover */
+  text-decoration: underline;
+}
+
+/* Light Theme */
+.light-mode .header-theme,
+.light-mode .footer-theme {
+  background-color: #ffffff;
+  color: #212529;
+}
+
+/* Dark Theme */
+.dark-mode .header-theme,
+.dark-mode .footer-theme {
+  background-color: #1a1a1a;
+  color: #f8f9fa;
+  border-color: #333;
+}
+
+/* Icon inherits text color */
+.header-theme .github-icon {
+  color: inherit;
+}
+
+/* Light mode styles */
+.light-mode .header-theme a {
+  color: #212529 !important; /* Dark gray/black for links */
+}
+
+/* Optional hover effect in light mode */
+.light-mode .header-theme a:hover {
+  color: #000 !important;
+  text-decoration: underline;
+}
+
+/* Dark mode styles (already works, but ensure it's here) */
+.dark-mode .header-theme a {
+  color: #f8f9fa !important; /* White links */
+}
+
+.dark-mode .header-theme a:hover {
+  color: #cccccc !important;
 }
