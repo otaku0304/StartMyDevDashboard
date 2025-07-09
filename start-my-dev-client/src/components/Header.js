@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // 👈 import Link
+import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import githubIcon from "../assets/github.png";
 import { FaGithub } from "react-icons/fa";
 
 const Header = () => {
