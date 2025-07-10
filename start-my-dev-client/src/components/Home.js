@@ -95,14 +95,14 @@ const Home = () => {
         <div className="col-md-7 text-center text-md-start">
           <h1 className="display-custom fw-bold">How StartMyDev Helps</h1>
           <p className="fw-normal">StartMyDev makes setup seamless:</p>
-          <p className="lead mt-3">
+          <div className="lead mt-3">
             <ul className="fw-normal">
               <li>Generates platform-specific PowerShell scripts in seconds</li>
               <li>Supports React, Angular, Spring Boot, Flask, and Node.js</li>
               <li>Customize ports, paths, profiles, and PowerShell versions</li>
               <li>Download scripts in a single ZIP file — ready to run</li>
             </ul>
-          </p>
+          </div>
         </div>
       </section>
 
@@ -117,8 +117,7 @@ const Home = () => {
               <li>Supports Windows (Linux & macOS coming soon)</li>
               <li>Configure ports, Java paths, and Spring profiles</li>
               <li>
-                <strong>Privacy Focused</strong> We don’t collect any user or
-                project data.
+                Privacy Focused We don’t collect any user or project data.
               </li>
             </ul>
           </div>
@@ -128,7 +127,7 @@ const Home = () => {
             src={relaxImg}
             alt="Developer productivity illustration"
             className="img-fluid"
-            style={{ maxHeight: "360px" }}
+            style={{ maxHeight: "320px" }}
           />
         </div>
       </section>
@@ -136,7 +135,7 @@ const Home = () => {
       {/* Call To Action */}
       <section className="text-center mt-5">
         <h3 className="fw-bold">Start Building Smarter, Not Harder</h3>
-        <p className="text-muted">
+        <p className="lead fw-normal">
           Let StartMyDev handle your setup, so you can focus on building great
           software.
         </p>
