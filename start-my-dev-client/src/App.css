@@ -134,3 +134,8 @@ body {
 .dark-mode .header-theme a:hover {
   color: #cccccc !important;
 }
+
+.display-custom {
+  font-size: 2.5rem !important;
+  font-weight: 700; /* match display font if needed */
+}

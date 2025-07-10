@@ -20,7 +20,7 @@ const Header = () => {
 
   return (
     <header className="py-3 border-bottom shadow-sm sticky-top header-theme">
-      <div className="container d-flex justify-content-between align-items-center">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Home navigation */}
         <Link
           to="/"

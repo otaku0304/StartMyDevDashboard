@@ -108,7 +108,7 @@ const ScriptGenerator = () => {
   };
 
   return (
-    <div className="container py-4">
+    <div className="container-fluid py-4">
       <div className="card shadow-lg p-4">
         {/* OS Selection */}
         <div className="mb-4">
