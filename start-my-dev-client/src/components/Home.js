@@ -100,7 +100,7 @@ const Home = () => {
               <li>Generates platform-specific PowerShell scripts in seconds</li>
               <li>Supports React, Angular, Spring Boot, Flask, and Node.js</li>
               <li>Customize ports, paths, profiles, and PowerShell versions</li>
-              <li>Download scripts in a single ZIP file — ready to run</li>
+              <li>Download two ready-to-run script files.</li>
             </ul>
           </div>
         </div>
