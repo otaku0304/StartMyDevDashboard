@@ -4,7 +4,7 @@ const Footer = () => {
       <div className="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center text-muted">
         <div>
           <small>
-            &copy; {new Date().getFullYear()} StartMyDev Generator. All rights
+            &copy; {new Date().getFullYear()} StartMyDev All rights
             reserved.
           </small>
         </div>
