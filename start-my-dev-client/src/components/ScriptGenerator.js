@@ -5,7 +5,7 @@ const ScriptGenerator = () => {
   const [form, setForm] = useState({
     applicationType: "frontend",
     projectType: "React",
-    powershellVersion: "7",
+    powershellVersion: "5",
     os: "windows",
     frontendPath: "",
     backendPath: "",
@@ -108,8 +108,18 @@ const ScriptGenerator = () => {
   };
 
   return (
-    <div className="container-fluid py-4">
-      <div className="card shadow-lg p-4">
+    <div className="container py-5">
+      <div className="text-center mb-5">
+        <h1 className="fw-bold display-5">
+          ⚙️ StartMyDev Script Generator
+        </h1>
+        <p className="lead fw-normal">
+          Quickly generate PowerShell scripts to launch your frontend, backend,
+          or fullstack project in seconds.
+        </p>
+      </div>
+
+      <div className="card shadow-lg border-0 rounded-4 p-4">
         {/* OS Selection */}
         <div className="mb-4">
           <label className="form-label fw-bold">Operating System</label>
@@ -214,8 +224,9 @@ const ScriptGenerator = () => {
               ))}
             </div>
           </div>
+
           <div className="col-md-6">
-            <label className="fw-bold">Port (optional)</label>
+            <label className="form-label fw-bold">Port (optional)</label>
             <input
               className="form-control"
               name="port"
@@ -226,11 +237,13 @@ const ScriptGenerator = () => {
           </div>
         </div>
 
-        {/* Frontend + Backend Paths */}
+        {/* Project Paths */}
         <div className="row mb-4">
           {isFrontend && (
             <div className="col-md-6 mb-3">
-              <label className="fw-bold">{getFrontendPathLabel()}</label>
+              <label className="form-label fw-bold">
+                {getFrontendPathLabel()}
+              </label>
               <input
                 className="form-control"
                 name="frontendPath"
@@ -242,7 +255,9 @@ const ScriptGenerator = () => {
           )}
           {isBackend && (
             <div className="col-md-6 mb-3">
-              <label className="fw-bold">{getBackendPathLabel()}</label>
+              <label className="form-label fw-bold">
+                {getBackendPathLabel()}
+              </label>
               <input
                 className="form-control"
                 name="backendPath"
@@ -258,7 +273,7 @@ const ScriptGenerator = () => {
         {isSpringBoot && (
           <div className="row mb-4">
             <div className="col-md-6 mb-3">
-              <label className="fw-bold">Java Path (optional)</label>
+              <label className="form-label fw-bold">Java Path (optional)</label>
               <input
                 className="form-control"
                 name="javaPath"
@@ -268,7 +283,9 @@ const ScriptGenerator = () => {
               />
             </div>
             <div className="col-md-6 mb-3">
-              <label className="fw-bold">Spring Profile (optional)</label>
+              <label className="form-label fw-bold">
+                Spring Profile (optional)
+              </label>
               <input
                 className="form-control"
                 name="springProfile"
