@@ -83,26 +83,39 @@ const ScriptGenerator = () => {
       return;
     }
 
-    if (isSpringBoot && (!form.javaPath || !form.springProfile)) {
-      alert("Please provide the Java path and Spring profile.");
-      return;
-    }
-
     try {
       const res = await axios.post("http://localhost:5000/generate", form, {
         responseType: "blob",
       });
 
-      const blob = new Blob([res.data], { type: "application/zip" });
+      const contentDisposition = res.headers["content-disposition"];
+      const fileName =
+        contentDisposition?.split("filename=")[1]?.replace(/['"]/g, "") ||
+        "launch.ps1"; // fallback name
+
+      const blob = new Blob([res.data], { type: "application/octet-stream" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "launch-folder.zip");
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      // ✅ Reset the form
+      setForm({
+        applicationType: "frontend",
+        projectType: "React",
+        powershellVersion: "5",
+        os: "windows",
+        frontendPath: "",
+        backendPath: "",
+        javaPath: "",
+        springProfile: "",
+        port: "",
+      });
     } catch (err) {
-      alert("Something went wrong while generating the ZIP.");
+      alert("Something went wrong while generating the script.");
       console.error(err);
     }
   };
@@ -110,9 +123,7 @@ const ScriptGenerator = () => {
   return (
     <div className="container py-5">
       <div className="text-center mb-5">
-        <h1 className="fw-bold display-5">
-          ⚙️ StartMyDev Script Generator
-        </h1>
+        <h1 className="fw-bold display-5">⚙️ StartMyDev Script Generator</h1>
         <p className="lead fw-normal">
           Quickly generate PowerShell scripts to launch your frontend, backend,
           or fullstack project in seconds.
@@ -148,9 +159,7 @@ const ScriptGenerator = () => {
               </div>
             ))}
           </div>
-          <small className="text-muted">
-            Currently, only Windows is supported.
-          </small>
+          <small className="text-muted">Currently, only Windows is supported.</small>
         </div>
 
         {/* Application Type + PowerShell */}
@@ -241,9 +250,7 @@ const ScriptGenerator = () => {
         <div className="row mb-4">
           {isFrontend && (
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                {getFrontendPathLabel()}
-              </label>
+              <label className="form-label fw-bold">{getFrontendPathLabel()}</label>
               <input
                 className="form-control"
                 name="frontendPath"
@@ -255,9 +262,7 @@ const ScriptGenerator = () => {
           )}
           {isBackend && (
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                {getBackendPathLabel()}
-              </label>
+              <label className="form-label fw-bold">{getBackendPathLabel()}</label>
               <input
                 className="form-control"
                 name="backendPath"
@@ -283,9 +288,7 @@ const ScriptGenerator = () => {
               />
             </div>
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                Spring Profile (optional)
-              </label>
+              <label className="form-label fw-bold">Spring Profile (optional)</label>
               <input
                 className="form-control"
                 name="springProfile"
