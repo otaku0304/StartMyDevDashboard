@@ -298,7 +298,8 @@ const ScriptGenerator = () => {
           {form.applicationType === "frontend" && (
             <div className="col-md-6">
               <label className="form-label fw-bold">
-                {getFrontendPortLabel()} <span className="text-muted">(optional)</span>
+                {getFrontendPortLabel()}{" "}
+                <span className="text-muted">(optional)</span>
               </label>
 
               <input
@@ -313,7 +314,8 @@ const ScriptGenerator = () => {
           {form.applicationType === "backend" && (
             <div className="col-md-6">
               <label className="form-label fw-bold">
-                {getBackendPortLabel()} <span className="text-muted">(optional)</span>
+                {getBackendPortLabel()}{" "}
+                <span className="text-muted">(optional)</span>
               </label>
 
               <input
@@ -329,7 +331,8 @@ const ScriptGenerator = () => {
             <>
               <div className="col-md-6">
                 <label className="form-label fw-bold">
-                  {getFrontendPortLabel()} <span className="text-muted">(optional)</span>
+                  {getFrontendPortLabel()}{" "}
+                  <span className="text-muted">(optional)</span>
                 </label>
 
                 <input

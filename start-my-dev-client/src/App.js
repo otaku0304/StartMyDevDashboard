@@ -20,7 +20,7 @@ function App() {
       <ToastContainer
         closeButton={CloseButton}
         icon={false}
-        position="top-left"
+        position="top-right"
       />
     </>
   );
