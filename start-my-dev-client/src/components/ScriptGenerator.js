@@ -1,5 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
+import { toast } from "react-toastify";
+import { handleErrorResponse } from "../core/tokenInterceptor/AxiosInstance";
+import ScriptGeneratorService from "../service/ScriptGeneratorService";
+
+const scriptGenerateService = new ScriptGeneratorService();
 
 const ScriptGenerator = () => {
   const [form, setForm] = useState({
@@ -17,7 +21,8 @@ const ScriptGenerator = () => {
   const getProjectTypeOptions = (appType = form.applicationType) => {
     if (appType === "frontend") return ["React", "Angular"];
     if (appType === "backend") return ["Spring Boot", "Flask", "Node.js"];
-    if (appType === "fullstack") return ["React or Angular + Spring Boot"];
+    if (appType === "fullstack")
+      return ["Angular + Spring Boot", "React + Spring Boot"];
     return [];
   };
 
@@ -65,59 +70,90 @@ const ScriptGenerator = () => {
 
   const handleSubmit = async () => {
     if (isFullstack && (!form.frontendPath || !form.backendPath)) {
-      alert("Please provide both React/Angular and Spring Boot project paths.");
+      toast.error(
+        "Please provide both React/Angular and Spring Boot project paths."
+      );
       return;
     }
 
     if (form.applicationType === "frontend" && !form.frontendPath) {
-      alert(
+      toast.error(
         `Please provide the ${form.projectType || "frontend"} project path.`
       );
       return;
     }
 
     if (form.applicationType === "backend" && !form.backendPath) {
-      alert(
+      toast.error(
         `Please provide the ${form.projectType || "backend"} project path.`
       );
       return;
     }
 
-    try {
-      const res = await axios.post("http://localhost:5000/generate", form, {
-        responseType: "blob",
+    // ✅ Set frontend value
+    let frontend = "";
+    if (form.projectType.toLowerCase().includes("react")) frontend = "React";
+    else if (
+      form.projectType.toLowerCase().includes("angular") ||
+      form.projectType.toLowerCase().includes("ng")
+    )
+      frontend = "Ng";
+
+    // ✅ Set backend value with support for Flask aliases
+    let backend = "";
+    if (
+      form.projectType.toLowerCase().includes("spring boot") ||
+      form.projectType.toLowerCase().includes("boot")
+    )
+      backend = "Boot";
+    else if (
+      form.projectType.toLowerCase().includes("flask") ||
+      form.projectType.toLowerCase().includes("fl") ||
+      form.projectType.toLowerCase().includes("flk")
+    )
+      backend = "Flask";
+    else if (form.projectType.toLowerCase().includes("node")) backend = "Node";
+
+    const requestBody = Object.fromEntries(
+      Object.entries({
+        os: form.os,
+        powershellVersion: form.powershellVersion,
+        frontend,
+        backend,
+        port: form.port,
+        springProfile: form.springProfile,
+        javaPath: form.javaPath,
+        frontendPath: form.frontendPath,
+        backendPath: form.backendPath,
+      }).filter(([_, v]) => v !== null && v !== undefined && v !== "")
+    );
+    
+    scriptGenerateService
+      .scriptGenerate(requestBody)
+      .then((response) => {
+        if (response.data.responseCode === 200) {
+          const responseBody = response.data.responseBody;
+          console.log("Response Body:", responseBody);
+          const { fileName, fileBase64 } = response.data.responseBody;
+          const byteCharacters = atob(fileBase64);
+          const byteNumbers = new Array(byteCharacters.length)
+            .fill(0)
+            .map((_, i) => byteCharacters.charCodeAt(i));
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: "application/zip" });
+
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName || "StartMyDev.zip");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      })
+      .catch((error) => {
+        handleErrorResponse("generate-api", error.response);
       });
-
-      const contentDisposition = res.headers["content-disposition"];
-      const fileName =
-        contentDisposition?.split("filename=")[1]?.replace(/['"]/g, "") ||
-        "launch.ps1"; // fallback name
-
-      const blob = new Blob([res.data], { type: "application/octet-stream" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // ✅ Reset the form
-      setForm({
-        applicationType: "frontend",
-        projectType: "React",
-        powershellVersion: "5",
-        os: "windows",
-        frontendPath: "",
-        backendPath: "",
-        javaPath: "",
-        springProfile: "",
-        port: "",
-      });
-    } catch (err) {
-      alert("Something went wrong while generating the script.");
-      console.error(err);
-    }
   };
 
   return (
@@ -159,7 +195,9 @@ const ScriptGenerator = () => {
               </div>
             ))}
           </div>
-          <small className="text-muted">Currently, only Windows is supported.</small>
+          <small className="text-muted">
+            Currently, only Windows is supported.
+          </small>
         </div>
 
         {/* Application Type + PowerShell */}
@@ -224,7 +262,6 @@ const ScriptGenerator = () => {
                     value={type}
                     checked={form.projectType === type}
                     onChange={handleChange}
-                    disabled={isFullstack}
                   />
                   <label className="form-check-label" htmlFor={type}>
                     {type}
@@ -250,7 +287,9 @@ const ScriptGenerator = () => {
         <div className="row mb-4">
           {isFrontend && (
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">{getFrontendPathLabel()}</label>
+              <label className="form-label fw-bold">
+                {getFrontendPathLabel()}
+              </label>
               <input
                 className="form-control"
                 name="frontendPath"
@@ -262,7 +301,9 @@ const ScriptGenerator = () => {
           )}
           {isBackend && (
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">{getBackendPathLabel()}</label>
+              <label className="form-label fw-bold">
+                {getBackendPathLabel()}
+              </label>
               <input
                 className="form-control"
                 name="backendPath"
@@ -288,7 +329,9 @@ const ScriptGenerator = () => {
               />
             </div>
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">Spring Profile (optional)</label>
+              <label className="form-label fw-bold">
+                Spring Profile (optional)
+              </label>
               <input
                 className="form-control"
                 name="springProfile"
