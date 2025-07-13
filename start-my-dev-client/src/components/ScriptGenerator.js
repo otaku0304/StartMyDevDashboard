@@ -15,7 +15,8 @@ const ScriptGenerator = () => {
     backendPath: "",
     javaPath: "",
     springProfile: "",
-    port: "",
+    frontendPort: "",
+    backendPort: "",
   });
 
   const getProjectTypeOptions = (appType = form.applicationType) => {
@@ -38,6 +39,21 @@ const ScriptGenerator = () => {
     });
   };
 
+  const getFrontendPortLabel = () => {
+    if (form.projectType.toLowerCase().includes("react")) return "React Port";
+    if (form.projectType.toLowerCase().includes("angular"))
+      return "Angular Port";
+    return "Frontend Port";
+  };
+
+  const getBackendPortLabel = () => {
+    if (form.projectType.toLowerCase().includes("spring boot"))
+      return "Spring Boot Port";
+    if (form.projectType.toLowerCase().includes("flask")) return "Flask Port";
+    if (form.projectType.toLowerCase().includes("node")) return "Node.js Port";
+    return "Backend Port";
+  };
+
   const isFullstack = form.applicationType === "fullstack";
   const isFrontend = form.applicationType === "frontend" || isFullstack;
   const isBackend = form.applicationType === "backend" || isFullstack;
@@ -51,7 +67,7 @@ const ScriptGenerator = () => {
         ? "Angular Project Path"
         : "Frontend Project Path";
     } else if (isFullstack) {
-      return "React/Angular JS Project Path";
+      return "React/Angular Project Path";
     }
     return "Frontend Project Path";
   };
@@ -69,28 +85,44 @@ const ScriptGenerator = () => {
   };
 
   const handleSubmit = async () => {
-    if (isFullstack && (!form.frontendPath || !form.backendPath)) {
-      toast.error(
-        "Please provide both React/Angular and Spring Boot project paths."
-      );
+    if (!["frontend", "backend", "fullstack"].includes(form.applicationType)) {
+      toast.error("Invalid application type selected.");
       return;
     }
 
-    if (form.applicationType === "frontend" && !form.frontendPath) {
-      toast.error(
-        `Please provide the ${form.projectType || "frontend"} project path.`
-      );
-      return;
+    if (form.applicationType === "frontend") {
+      if (!form.frontendPath) {
+        toast.error("Please provide the frontend project path.");
+        return;
+      }
+      if (!form.frontendPort) {
+        toast.error("Please provide the frontend port.");
+        return;
+      }
     }
 
-    if (form.applicationType === "backend" && !form.backendPath) {
-      toast.error(
-        `Please provide the ${form.projectType || "backend"} project path.`
-      );
-      return;
+    if (form.applicationType === "backend") {
+      if (!form.backendPath) {
+        toast.error("Please provide the backend project path.");
+        return;
+      }
+      if (!form.backendPort) {
+        toast.error("Please provide the backend port.");
+        return;
+      }
     }
 
-    // ✅ Set frontend value
+    if (form.applicationType === "fullstack") {
+      if (!form.frontendPath || !form.backendPath) {
+        toast.error("Please provide both frontend and backend project paths.");
+        return;
+      }
+      if (!form.frontendPort || !form.backendPort) {
+        toast.error("Please provide both frontend and backend ports.");
+        return;
+      }
+    }
+
     let frontend = "";
     if (form.projectType.toLowerCase().includes("react")) frontend = "React";
     else if (
@@ -99,18 +131,10 @@ const ScriptGenerator = () => {
     )
       frontend = "Ng";
 
-    // ✅ Set backend value with support for Flask aliases
     let backend = "";
-    if (
-      form.projectType.toLowerCase().includes("spring boot") ||
-      form.projectType.toLowerCase().includes("boot")
-    )
+    if (form.projectType.toLowerCase().includes("spring boot"))
       backend = "Boot";
-    else if (
-      form.projectType.toLowerCase().includes("flask") ||
-      form.projectType.toLowerCase().includes("fl") ||
-      form.projectType.toLowerCase().includes("flk")
-    )
+    else if (form.projectType.toLowerCase().includes("flask"))
       backend = "Flask";
     else if (form.projectType.toLowerCase().includes("node")) backend = "Node";
 
@@ -118,42 +142,42 @@ const ScriptGenerator = () => {
       Object.entries({
         os: form.os,
         powershellVersion: form.powershellVersion,
+        applicationType: form.applicationType,
         frontend,
         backend,
-        port: form.port,
+        frontendPort: form.frontendPort,
+        backendPort: form.backendPort,
         springProfile: form.springProfile,
         javaPath: form.javaPath,
         frontendPath: form.frontendPath,
         backendPath: form.backendPath,
       }).filter(([_, v]) => v !== null && v !== undefined && v !== "")
     );
-    
-    scriptGenerateService
-      .scriptGenerate(requestBody)
-      .then((response) => {
-        if (response.data.responseCode === 200) {
-          const responseBody = response.data.responseBody;
-          console.log("Response Body:", responseBody);
-          const { fileName, fileBase64 } = response.data.responseBody;
-          const byteCharacters = atob(fileBase64);
-          const byteNumbers = new Array(byteCharacters.length)
-            .fill(0)
-            .map((_, i) => byteCharacters.charCodeAt(i));
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: "application/zip" });
 
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", fileName || "StartMyDev.zip");
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      })
-      .catch((error) => {
-        handleErrorResponse("generate-api", error.response);
-      });
+    try {
+      const response = await scriptGenerateService.scriptGenerate(requestBody);
+      const { responseCode, responseBody } = response.data;
+
+      if (responseCode === 200) {
+        const { fileName, fileBase64 } = responseBody;
+        const byteCharacters = atob(fileBase64);
+        const byteNumbers = new Array(byteCharacters.length)
+          .fill(0)
+          .map((_, i) => byteCharacters.charCodeAt(i));
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "application/zip" });
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName || "StartMyDev.zip");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      handleErrorResponse("generate-api", error.response);
+    }
   };
 
   return (
@@ -200,7 +224,7 @@ const ScriptGenerator = () => {
           </small>
         </div>
 
-        {/* Application Type + PowerShell */}
+        {/* App Type + PowerShell */}
         <div className="row mb-4">
           <div className="col-md-6">
             <label className="form-label fw-bold">Application Type</label>
@@ -223,7 +247,6 @@ const ScriptGenerator = () => {
               ))}
             </div>
           </div>
-
           <div className="col-md-6">
             <label className="form-label fw-bold">PowerShell Version</label>
             <div className="d-flex gap-3">
@@ -247,7 +270,7 @@ const ScriptGenerator = () => {
           </div>
         </div>
 
-        {/* Project Type + Port */}
+        {/* Project Type + Ports */}
         <div className="row mb-4">
           <div className="col-md-6">
             <label className="form-label fw-bold">Project Type</label>
@@ -271,16 +294,67 @@ const ScriptGenerator = () => {
             </div>
           </div>
 
-          <div className="col-md-6">
-            <label className="form-label fw-bold">Port (optional)</label>
-            <input
-              className="form-control"
-              name="port"
-              value={form.port}
-              onChange={handleChange}
-              placeholder="e.g., 8080 or 3000"
-            />
-          </div>
+          {/* Dynamic Port Inputs */}
+          {form.applicationType === "frontend" && (
+            <div className="col-md-6">
+              <label className="form-label fw-bold">
+                {getFrontendPortLabel()}
+              </label>
+
+              <input
+                className="form-control"
+                name="frontendPort"
+                value={form.frontendPort}
+                onChange={handleChange}
+                placeholder="e.g., 3000"
+              />
+            </div>
+          )}
+          {form.applicationType === "backend" && (
+            <div className="col-md-6">
+              <label className="form-label fw-bold">
+                {getBackendPortLabel()}
+              </label>
+
+              <input
+                className="form-control"
+                name="backendPort"
+                value={form.backendPort}
+                onChange={handleChange}
+                placeholder="e.g., 8080"
+              />
+            </div>
+          )}
+          {form.applicationType === "fullstack" && (
+            <>
+              <div className="col-md-6">
+                <label className="form-label fw-bold">
+                  {getFrontendPortLabel()}
+                </label>
+
+                <input
+                  className="form-control"
+                  name="frontendPort"
+                  value={form.frontendPort}
+                  onChange={handleChange}
+                  placeholder="e.g., 3000"
+                />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label fw-bold">
+                  {getBackendPortLabel()}
+                </label>
+
+                <input
+                  className="form-control"
+                  name="backendPort"
+                  value={form.backendPort}
+                  onChange={handleChange}
+                  placeholder="e.g., 8080"
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Project Paths */}
@@ -343,7 +417,7 @@ const ScriptGenerator = () => {
           </div>
         )}
 
-        {/* Submit Button */}
+        {/* Submit */}
         <div className="text-center mt-4">
           <button className="btn btn-primary px-5" onClick={handleSubmit}>
             Generate & Download
