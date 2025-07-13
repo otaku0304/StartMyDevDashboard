@@ -3,13 +3,13 @@ const cors = require("cors");
 const fs = require("fs-extra");
 const path = require("path");
 const archiver = require("archiver");
+const stream = require("stream");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const BASE_TEMPLATE_PATH = path.join(__dirname, "scripts");
-const SESSIONS_DIR = path.join(__dirname, "sessions");
 
 // Builds the full template path
 const getFolderName = ({ os, powershellVersion, frontend, backend }) => {
@@ -18,49 +18,90 @@ const getFolderName = ({ os, powershellVersion, frontend, backend }) => {
     `${os}-ps${powershellVersion}`,
     `${frontend}${backend}QuickStart`
   );
-  console.log("📁 Using Template Folder:", folderPath);
+  console.log("📁 Using Scripts Folder:", folderPath);
   return folderPath;
 };
 
-// Injects user values into .bat and .ps1 files
-const injectValues = async (folder, values) => {
-  const files = await fs.readdir(folder);
-  for (const file of files) {
-    const filePath = path.join(folder, file);
-    const stat = await fs.stat(filePath);
-
-    if (stat.isFile()) {
-      let content = await fs.readFile(filePath, "utf8");
-      for (const key in values) {
-        content = content.replace(new RegExp(`{{${key}}}`, "g"), values[key]);
-      }
-      await fs.writeFile(filePath, content);
-    }
+// Reads and injects values into a file
+const readAndInject = async (filePath, values) => {
+  let content = await fs.readFile(filePath, "utf8");
+  for (const key in values) {
+    content = content.replace(new RegExp(`{{${key}}}`, "g"), values[key]);
   }
+  return content;
 };
 
-// Main endpoint to generate files
+// Main endpoint
 app.post("/generate", async (req, res) => {
   const {
-    os = "windows",
-    powershellVersion = "5",
-    port = "",
-    springProfile = "",
-    javaPath = "",
-    frontendPath = "",
-    backendPath = "",
+    os,
+    powershellVersion,
+    port,
+    springProfile,
+    javaPath,
+    frontendPath,
+    backendPath,
     frontend,
     backend,
+    applicationType,
+    frontendPort,
+    backendPort,
   } = req.body;
+
+  const validAppTypes = ["frontend", "backend", "fullstack"];
+  if (!applicationType || !validAppTypes.includes(applicationType)) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage:
+        "Invalid or missing 'applicationType'. Expected 'frontend', 'backend', or 'fullstack'.",
+    });
+  }
 
   // ✅ Validate required fields
   if (!frontend || !backend) {
-    return res
-      .status(400)
-      .json({ responseCode: 400, responseMessage: "Missing 'frontend' or 'backend' type in request." });
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage: "Missing 'frontend' or 'backend' type in request.",
+    });
   }
 
-  const templatePath = getFolderName({ os, powershellVersion, frontend, backend });
+  // ✅ Validate required fields
+  if (!frontend || !backend) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage: "Missing 'frontend' or 'backend' type in request.",
+    });
+  }
+
+  // ✅ Validate ports based on application type
+  if (applicationType === "frontend" && !frontendPort && !port) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage: "Missing 'frontendPort' for frontend application.",
+    });
+  }
+
+  if (applicationType === "backend" && !backendPort && !port) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage: "Missing 'backendPort' for backend application.",
+    });
+  }
+
+  if (applicationType === "fullstack" && (!frontendPort || !backendPort)) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage:
+        "Missing both 'frontendPort' and 'backendPort' for fullstack application.",
+    });
+  }
+
+  const templatePath = getFolderName({
+    os,
+    powershellVersion,
+    frontend,
+    backend,
+  });
 
   if (!fs.existsSync(templatePath)) {
     return res.status(404).json({
@@ -70,48 +111,63 @@ app.post("/generate", async (req, res) => {
   }
 
   try {
-    const sessionId = `session-${Date.now()}`;
-    const sessionPath = path.join(SESSIONS_DIR, sessionId);
-    await fs.copy(templatePath, sessionPath);
+    const files = await fs.readdir(templatePath);
+    const archiveStream = new stream.PassThrough();
+    const archive = archiver("zip", { zlib: { level: 9 } });
 
-    await injectValues(sessionPath, {
-      PORT: port,
+    const zipChunks = [];
+    archiveStream.on("data", (chunk) => zipChunks.push(chunk));
+
+    // ✅ Handle ports based on applicationType
+    let resolvedFrontendPort = "";
+    let resolvedBackendPort = "";
+
+    if (applicationType === "frontend") {
+      resolvedFrontendPort = frontendPort || port;
+    } else if (applicationType === "backend") {
+      resolvedBackendPort = backendPort || port;
+    } else if (applicationType === "fullstack") {
+      resolvedFrontendPort = frontendPort || "";
+      resolvedBackendPort = backendPort || "";
+    }
+
+    // ✅ Values to inject into each file
+    const injectMap = {
+      FRONTEND_PORT: resolvedFrontendPort,
+      BACKEND_PORT: resolvedBackendPort,
       SPRING_PROFILE: springProfile,
       JAVA_PATH: javaPath,
       FRONTEND_PATH: frontendPath,
       BACKEND_PATH: backendPath,
+    };
+
+    // ✅ Pipe and inject
+    archive.pipe(archiveStream);
+
+    for (const file of files) {
+      const filePath = path.join(templatePath, file);
+      const stat = await fs.stat(filePath);
+      if (stat.isFile()) {
+        const injectedContent = await readAndInject(filePath, injectMap);
+        archive.append(injectedContent, { name: `StartMyDev/${file}` });
+      }
+    }
+
+    archiveStream.on("finish", () => {
+      const zipBuffer = Buffer.concat(zipChunks);
+      const base64Zip = zipBuffer.toString("base64");
+
+      return res.status(200).json({
+        responseCode: 200,
+        responseMessage: "Script generated successfully.",
+        responseBody: {
+          fileName: "StartMyDev.zip",
+          fileBase64: base64Zip,
+        },
+      });
     });
 
-    const zipPath = path.join(SESSIONS_DIR, `${sessionId}.zip`);
-    const archive = archiver("zip", { zlib: { level: 9 } });
-    const output = fs.createWriteStream(zipPath);
-
-    await new Promise((resolve, reject) => {
-      archive.directory(sessionPath, "StartMyDev");
-      archive.pipe(output);
-      archive.finalize();
-      output.on("close", resolve);
-      archive.on("error", reject);
-    });
-
-    // Convert zip to base64
-    const zipBuffer = await fs.readFile(zipPath);
-    const base64Zip = zipBuffer.toString("base64");
-
-    // Clean up
-    setTimeout(() => {
-      fs.remove(sessionPath);
-      fs.remove(zipPath);
-    }, 60 * 1000);
-
-    return res.status(200).json({
-      responseCode: 200,
-      responseMessage: "Script generated successfully.",
-      responseBody: {
-        fileName: "StartMyDev.zip",
-        fileBase64: base64Zip,
-      },
-    });
+    await archive.finalize();
   } catch (err) {
     console.error("❌ Error generating script:", err);
     return res.status(500).json({
@@ -120,7 +176,6 @@ app.post("/generate", async (req, res) => {
     });
   }
 });
-
 
 app.listen(5000, () =>
   console.log("🚀 Server running on http://localhost:5000")
