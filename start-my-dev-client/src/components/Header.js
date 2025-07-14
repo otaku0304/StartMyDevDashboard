@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { FaGithub } from "react-icons/fa";
@@ -41,14 +41,9 @@ const Header = () => {
             <FaGithub size={24} className="github-icon" />
           </a>
 
-          <a
-            href="https://your-docs-link.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-decoration-none fw-semibold"
-          >
+          <Link to="/docs" className="text-decoration-none fw-semibold">
             Docs
-          </a>
+          </Link>
           <button
             className={`btn btn-sm ${darkMode ? "btn-light" : "btn-dark"}`}
             onClick={toggleTheme}
