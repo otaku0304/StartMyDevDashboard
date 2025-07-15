@@ -6,6 +6,7 @@ import "./App.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import AppRoutes from "./routes/index";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         icon={false}
         position="top-right"
       />
+      <SpeedInsights />
     </>
   );
 }
