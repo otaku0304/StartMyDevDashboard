@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import heroImg from "../assets/hero.svg";
 import reportImg from "../assets/report.svg";
 import relaxImg from "../assets/relax.svg";
-import inProgressImg from "../assets/inprogress.svg";
-import adventureImg from "../assets/adventure.svg";
 
 const Home = () => {
   return (
@@ -55,35 +53,35 @@ const Home = () => {
 
       {/* How It Works */}
       <section className="row justify-content-center mb-5">
-        <div className="col-lg-10">
+        <div className="col-md-7">
           <h2 className="text-center fw-bold mb-4">How It Works</h2>
-          <ol className="list-group list-group-numbered shadow">
-            <li className="list-group-item">
+          <ol className="ps-3">
+            <li className="mb-3">
               Select your <strong>Operating System</strong> (Windows is
               supported now, Linux/macOS coming soon).
             </li>
-            <li className="list-group-item">
+            <li className="mb-3">
               Choose your <strong>Project Type</strong>: Frontend, Backend, or
               Fullstack.
             </li>
-            <li className="list-group-item">
+            <li className="mb-3">
               Provide necessary configuration options (ports, project folder,
               PowerShell version: PS5 or PS7, etc.).
             </li>
-            <li className="list-group-item">
+            <li className="mb-3">
               Download the generated script and run it by:
-              <ul>
+              <ul className="mt-2">
                 <li>Double-clicking the `.ps1` file</li>
                 <li>Or executing it manually in PowerShell</li>
               </ul>
             </li>
-            <li className="list-group-item">
+            <li className="mb-3">
               No IDEs or manual dependency setup required. Everything works via
               script execution.
             </li>
-            <li className="list-group-item">
-              100% Privacy Focused: No data is collected. The platform is fully
-              open-source.
+            <li className="mb-3">
+              <strong>100% Privacy Focused:</strong> No data is collected. The
+              platform is fully open-source.
             </li>
           </ol>
         </div>
