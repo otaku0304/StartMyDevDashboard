@@ -3,6 +3,7 @@ import Home from "../components/Home";
 import ScriptGenerator from "../components/ScriptGenerator";
 import DocLayout from "../components/docs/DocLayout";
 import GettingStarted from "../components/docs/pages/GettingStarted";
+import PrivacyAndSecurity from "../components/docs/pages/PrivacyAndSecurity";
 
 const AppRoutes = () => {
   return (
@@ -12,6 +13,7 @@ const AppRoutes = () => {
       <Route path="/docs" element={<DocLayout />}>
         <Route index element={<GettingStarted />} />
         <Route path="getting-started" element={<GettingStarted />} />
+         <Route path="privacy-security" element={<PrivacyAndSecurity />} />
         {/* <Route path="configuration" element={<Configuration />} />
         <Route path="generate" element={<ScriptGeneration />} />
         <Route path="spring-boot" element={<SpringBootSetup />} /> */}
