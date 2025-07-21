@@ -5,24 +5,12 @@ const path = require("path");
 const archiver = require("archiver");
 const stream = require("stream");
 
+const { resolveTemplatePath } = require("./templateResolver");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const BASE_TEMPLATE_PATH = path.join(__dirname, "scripts");
-
-// Builds the full template path
-const getFolderName = ({ os, powershellVersion, frontend, backend }) => {
-  const folderPath = path.join(
-    BASE_TEMPLATE_PATH,
-    `${os}-ps${powershellVersion}`,
-    `${frontend}${backend}QuickStart`
-  );
-  console.log("📁 Using Scripts Folder:", folderPath);
-  return folderPath;
-};
-
-// Reads and injects values into a file
 const readAndInject = async (filePath, values) => {
   let content = await fs.readFile(filePath, "utf8");
   for (const key in values) {
@@ -31,7 +19,6 @@ const readAndInject = async (filePath, values) => {
   return content;
 };
 
-// Main endpoint
 app.post("/generate", async (req, res) => {
   const {
     os,
@@ -41,11 +28,11 @@ app.post("/generate", async (req, res) => {
     javaPath,
     frontendPath,
     backendPath,
-    frontend,
-    backend,
     applicationType,
+    projectType,
     frontendPort,
     backendPort,
+    gitBranch,
   } = req.body;
 
   const validAppTypes = ["frontend", "backend", "fullstack"];
@@ -57,23 +44,17 @@ app.post("/generate", async (req, res) => {
     });
   }
 
-  // ✅ Validate required fields
-  if (!frontend || !backend) {
+  if (
+    (applicationType === "frontend" && !projectType) ||
+    (applicationType === "backend" && !projectType) ||
+    (applicationType === "fullstack" && !Array.isArray(projectType))
+  ) {
     return res.status(400).json({
       responseCode: 400,
-      responseMessage: "Missing 'frontend' or 'backend' type in request.",
+      responseMessage: `Missing or invalid 'projectType' for ${applicationType} application.`,
     });
   }
 
-  // ✅ Validate required fields
-  if (!frontend || !backend) {
-    return res.status(400).json({
-      responseCode: 400,
-      responseMessage: "Missing 'frontend' or 'backend' type in request.",
-    });
-  }
-
-  // ✅ Validate ports based on application type
   if (applicationType === "frontend" && !frontendPort && !port) {
     return res.status(400).json({
       responseCode: 400,
@@ -96,12 +77,20 @@ app.post("/generate", async (req, res) => {
     });
   }
 
-  const templatePath = getFolderName({
-    os,
-    powershellVersion,
-    frontend,
-    backend,
-  });
+  let templatePath;
+  try {
+    templatePath = resolveTemplatePath({
+      os,
+      powershellVersion,
+      applicationType,
+      projectType,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage: err.message,
+    });
+  }
 
   if (!fs.existsSync(templatePath)) {
     return res.status(404).json({
@@ -118,7 +107,6 @@ app.post("/generate", async (req, res) => {
     const zipChunks = [];
     archiveStream.on("data", (chunk) => zipChunks.push(chunk));
 
-    // ✅ Handle ports based on applicationType
     let resolvedFrontendPort = "";
     let resolvedBackendPort = "";
 
@@ -131,7 +119,6 @@ app.post("/generate", async (req, res) => {
       resolvedBackendPort = backendPort || "";
     }
 
-    // ✅ Values to inject into each file
     const injectMap = {
       FRONTEND_PORT: resolvedFrontendPort,
       BACKEND_PORT: resolvedBackendPort,
@@ -139,9 +126,9 @@ app.post("/generate", async (req, res) => {
       JAVA_PATH: javaPath,
       FRONTEND_PATH: frontendPath,
       BACKEND_PATH: backendPath,
+      GIT_BRANCH: gitBranch,
     };
 
-    // ✅ Pipe and inject
     archive.pipe(archiveStream);
 
     for (const file of files) {

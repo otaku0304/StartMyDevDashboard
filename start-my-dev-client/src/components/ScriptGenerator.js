@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { handleErrorResponse } from "../core/tokenInterceptor/AxiosInstance";
 import ScriptGeneratorService from "../service/ScriptGeneratorService";
+import projectTypeMap from "./projectTypeMap";
 
 const scriptGenerateService = new ScriptGeneratorService();
 
@@ -17,6 +18,7 @@ const ScriptGenerator = () => {
     springProfile: "",
     frontendPort: "",
     backendPort: "",
+    gitBranch: "development",
   });
 
   const getProjectTypeOptions = (appType = form.applicationType) => {
@@ -114,53 +116,31 @@ const ScriptGenerator = () => {
 
     if (form.applicationType === "fullstack") {
       if (!form.frontendPath || !form.backendPath) {
-        toast.error(
-          `Please provide both ${form.projectType
-            .split("+")[0]
-            .trim()} and ${form.projectType
-            .split("+")[1]
-            .trim()} project paths.`
-        );
+        toast.error("Please provide both frontend and backend project paths.");
         return;
       }
       if (!form.frontendPort || !form.backendPort) {
-        toast.error(
-          `Please provide both ${form.projectType
-            .split("+")[0]
-            .trim()} and ${form.projectType.split("+")[1].trim()} ports.`
-        );
+        toast.error("Please provide both frontend and backend ports.");
         return;
       }
     }
 
-    let frontend = "";
-    if (form.projectType.toLowerCase().includes("react")) frontend = "React";
-    else if (
-      form.projectType.toLowerCase().includes("angular") ||
-      form.projectType.toLowerCase().includes("ng")
-    )
-      frontend = "Ng";
-
-    let backend = "";
-    if (form.projectType.toLowerCase().includes("spring boot"))
-      backend = "Boot";
-    else if (form.projectType.toLowerCase().includes("flask"))
-      backend = "Flask";
-    else if (form.projectType.toLowerCase().includes("node")) backend = "Node";
+    const mappedProjectType =
+      projectTypeMap[form.projectType] || form.projectType;
 
     const requestBody = Object.fromEntries(
       Object.entries({
         os: form.os,
         powershellVersion: form.powershellVersion,
         applicationType: form.applicationType,
-        frontend,
-        backend,
+        projectType: mappedProjectType,
         frontendPort: form.frontendPort,
         backendPort: form.backendPort,
-        springProfile: form.springProfile,
-        javaPath: form.javaPath,
         frontendPath: form.frontendPath,
         backendPath: form.backendPath,
+        springProfile: form.springProfile,
+        javaPath: form.javaPath,
+        gitBranch: form.gitBranch,
       }).filter(([_, v]) => v !== null && v !== undefined && v !== "")
     );
 
@@ -309,7 +289,6 @@ const ScriptGenerator = () => {
             <div className="col-md-6">
               <label className="form-label fw-bold">
                 {getFrontendPortLabel()}{" "}
-                <span className="text-muted">(optional)</span>
               </label>
 
               <input
@@ -325,7 +304,6 @@ const ScriptGenerator = () => {
             <div className="col-md-6">
               <label className="form-label fw-bold">
                 {getBackendPortLabel()}{" "}
-                <span className="text-muted">(optional)</span>
               </label>
 
               <input
@@ -342,7 +320,6 @@ const ScriptGenerator = () => {
               <div className="col-md-6">
                 <label className="form-label fw-bold">
                   {getFrontendPortLabel()}{" "}
-                  <span className="text-muted">(optional)</span>
                 </label>
 
                 <input
@@ -416,9 +393,7 @@ const ScriptGenerator = () => {
               />
             </div>
             <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                Spring Profile (optional)
-              </label>
+              <label className="form-label fw-bold">Spring Profile</label>
               <input
                 className="form-control"
                 name="springProfile"
@@ -430,6 +405,19 @@ const ScriptGenerator = () => {
           </div>
         )}
 
+        {/* Git Branch */}
+        <div className="row mb-4">
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Git Branch (optional)</label>
+            <input
+              className="form-control"
+              name="gitBranch"
+              value={form.gitBranch}
+              onChange={handleChange}
+              placeholder="e.g., development, main"
+            />
+          </div>
+        </div>
         {/* Submit */}
         <div className="text-center mt-4">
           <button className="btn btn-primary px-5" onClick={handleSubmit}>
