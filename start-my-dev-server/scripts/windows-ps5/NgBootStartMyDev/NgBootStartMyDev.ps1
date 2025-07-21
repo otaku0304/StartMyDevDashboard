@@ -48,7 +48,7 @@ function Wait-ForPort {
 $env:JAVA_HOME = $javaPath
 $env:Path = "$javaPath\bin;$env:Path"
 
-# === CHECKOUT BACKEND CODE ===
+# === GIT BRANCH CHECKOUT AND PULL THE LATEST CHANGES ===
 Write-Host "`nPreparing Backend..." -ForegroundColor DarkGreen
 Set-Location $backendPath
 Write-Host "Checking out 'development' branch..." -ForegroundColor DarkGreen
