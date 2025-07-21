@@ -92,33 +92,43 @@ const ScriptGenerator = () => {
 
     if (form.applicationType === "frontend") {
       if (!form.frontendPath) {
-        toast.error("Please provide the frontend project path.");
+        toast.error(`Please provide the ${form.projectType} project path.`);
         return;
       }
       if (!form.frontendPort) {
-        toast.error("Please provide the frontend port.");
+        toast.error(`Please provide the ${form.projectType} port.`);
         return;
       }
     }
 
     if (form.applicationType === "backend") {
       if (!form.backendPath) {
-        toast.error("Please provide the backend project path.");
+        toast.error(`Please provide the ${form.projectType} project path.`);
         return;
       }
       if (!form.backendPort) {
-        toast.error("Please provide the backend port.");
+        toast.error(`Please provide the ${form.projectType} port.`);
         return;
       }
     }
 
     if (form.applicationType === "fullstack") {
       if (!form.frontendPath || !form.backendPath) {
-        toast.error("Please provide both frontend and backend project paths.");
+        toast.error(
+          `Please provide both ${form.projectType
+            .split("+")[0]
+            .trim()} and ${form.projectType
+            .split("+")[1]
+            .trim()} project paths.`
+        );
         return;
       }
       if (!form.frontendPort || !form.backendPort) {
-        toast.error("Please provide both frontend and backend ports.");
+        toast.error(
+          `Please provide both ${form.projectType
+            .split("+")[0]
+            .trim()} and ${form.projectType.split("+")[1].trim()} ports.`
+        );
         return;
       }
     }
