@@ -23,7 +23,7 @@ const ScriptGenerator = () => {
 
   const getProjectTypeOptions = (appType = form.applicationType) => {
     if (appType === "frontend") return ["React", "Angular"];
-    if (appType === "backend") return ["Spring Boot", "Flask", "Node.js"];
+    if (appType === "backend") return ["Spring Boot", "Flask"];
     if (appType === "fullstack")
       return ["Angular + Spring Boot", "React + Spring Boot"];
     return [];
