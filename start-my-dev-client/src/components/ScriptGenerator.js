@@ -15,6 +15,7 @@ const ScriptGenerator = () => {
     frontendPath: "",
     backendPath: "",
     javaPath: "",
+    pythonPath: "",
     springProfile: "",
     frontendPort: "",
     backendPort: "",
@@ -64,6 +65,7 @@ const ScriptGenerator = () => {
   const isFrontend = form.applicationType === "frontend" || isFullstack;
   const isBackend = form.applicationType === "backend" || isFullstack;
   const isSpringBoot = form.projectType.includes("Spring Boot");
+  const isFlask = form.projectType === "Flask";
 
   const getFrontendPathLabel = () => {
     if (form.applicationType === "frontend") {
@@ -144,6 +146,7 @@ const ScriptGenerator = () => {
         backendPath: form.backendPath,
         springProfile: form.springProfile,
         javaPath: form.javaPath,
+        pythonPath: form.pythonPath,
         gitBranch: form.gitBranch,
       }).filter(([_, v]) => v !== null && v !== undefined && v !== "")
     );
@@ -387,28 +390,48 @@ const ScriptGenerator = () => {
         </div>
 
         {/* Spring Boot Extras */}
-        {isSpringBoot && (
+        {(isSpringBoot || isFlask) && (
           <div className="row mb-4">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">Java Path (optional)</label>
-              <input
-                className="form-control"
-                name="javaPath"
-                value={form.javaPath}
-                onChange={handleChange}
-                placeholder="Will use system default if not provided"
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">Spring Profile</label>
-              <input
-                className="form-control"
-                name="springProfile"
-                value={form.springProfile}
-                onChange={handleChange}
-                placeholder="e.g., local, dev, prod"
-              />
-            </div>
+            {isSpringBoot && (
+              <>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label fw-bold">
+                    Java Path (optional)
+                  </label>
+                  <input
+                    className="form-control"
+                    name="javaPath"
+                    value={form.javaPath}
+                    onChange={handleChange}
+                    placeholder="Will use system default if not provided"
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label fw-bold">Spring Profile</label>
+                  <input
+                    className="form-control"
+                    name="springProfile"
+                    value={form.springProfile}
+                    onChange={handleChange}
+                    placeholder="e.g., local, dev, prod"
+                  />
+                </div>
+              </>
+            )}
+            {isFlask && (
+              <div className="col-md-6 mb-3">
+                <label className="form-label fw-bold">
+                  Python Path (optional)
+                </label>
+                <input
+                  className="form-control"
+                  name="pythonPath"
+                  value={form.pythonPath}
+                  onChange={handleChange}
+                  placeholder="Will use system default if not provided"
+                />
+              </div>
+            )}
           </div>
         )}
 

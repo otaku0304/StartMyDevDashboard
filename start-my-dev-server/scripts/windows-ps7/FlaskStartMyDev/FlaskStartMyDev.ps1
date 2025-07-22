@@ -14,9 +14,9 @@ Write-Host ""
 Write-Host "--------------------------------------" -ForegroundColor DarkCyan
 
 # === CONFIG ===
-$flaskPath = "E:\Flask-Projects\Defect_Audict"
-$backendPort = 5000
-$pythonPath = "D:\installationPath\python3.11"
+$backendPath = "{{BACKEND_PATH}}"
+$backendPort = "{{BACKEND_PORT}}"
+$pythonPath = "{{PYTHON_PATH}}"
 
 # === FUNCTION TO WAIT FOR PORT WITHOUT PROGRESS LOADER ===
 function Wait-ForPort {
@@ -44,10 +44,10 @@ function Wait-ForPort {
 
 # === LAUNCH FLASK BACKEND ===
 Write-Host "`nLaunching Flask Backend..." -ForegroundColor Cyan
-Set-Location $flaskPath
+Set-Location $backendPath
 
 # Start Flask backend in a new PowerShell 7 window
-Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$flaskPath'; . .\.venv\Scripts\Activate.ps1; $env:FLASK_APP 'app.py'; flask run"
+Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$backendPath'; . .\.venv\Scripts\Activate.ps1; $env:FLASK_APP 'app.py'; flask run"
 
 # Wait for Flask to start
 Write-Host "`Waiting for Flask backend to start on port $backendPort..."

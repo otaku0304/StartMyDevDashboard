@@ -30,9 +30,9 @@ This Windows edition provides a simple PowerShell-based startup experience optim
 
 ## 🛠️ Configuration
 
-Before running, open `flaskQuickStart.ps1` and set the following variables:
+Before running, open `flaskStartMyDev.ps1` and set the following variables:
 
 ```powershell
 $pythonPath  = "C:\Path\To\Your\Python"
-$flaskPath   = "C:\Path\To\Your\FlaskProject"
-$flaskPort   = 5000  # Change if your Flask app runs on a different port
+$backendPath   = "C:\Path\To\Your\FlaskProject"
+$backendPort   = 5000  # Change if your Flask app runs on a different port
