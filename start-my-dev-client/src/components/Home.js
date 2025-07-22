@@ -91,7 +91,7 @@ const Home = () => {
       <section className="row align-items-center mb-5">
         <div className="col-md-7 text-center text-md-start">
           <h2 className="fw-bold">Key Features</h2>
-          <ul className="lead mt-3">
+          <ul className="lead fw-normal mt-3">
             <li>PowerShell support for both PS5 and PS7</li>
             <li>Supports React, Angular, Spring Boot, Flask (more coming)</li>
             <li>Project types: Frontend, Backend, or Fullstack</li>
