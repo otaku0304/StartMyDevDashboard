@@ -1,6 +1,6 @@
-# ReactStartMyDev (Windows Edition)
+# NgStartMyDev (Windows Edition)
 
-ReactStartMyDev is a lightweight, script-driven solution to instantly launch your Angular projects **without opening an IDE or editor** like IntelliJ or VS Code.
+NgStartMyDev is a lightweight, script-driven solution to instantly launch your Angular projects **without opening an IDE or editor** like IntelliJ or VS Code.
 
 This Windows edition provides a simple PowerShell-based startup experience optimized **Angular**.
 
@@ -23,7 +23,7 @@ This Windows edition provides a simple PowerShell-based startup experience optim
 
 ## 🛠️ Configuration
 
-Before running, open `ReactStartMyDev.ps1` and set the following variables:
+Before running, open `NgStartMyDev.ps1` and set the following variables:
 
 ```powershell
 $frontendPath  = "C:\Path\To\Your\AngularOrReactProject"
