@@ -7,7 +7,7 @@ import projectTypeMap from "./projectTypeMap";
 const scriptGenerateService = new ScriptGeneratorService();
 
 const ScriptGenerator = () => {
-  const [form, setForm] = useState({
+  const initialFormState = {
     applicationType: "frontend",
     projectType: "React",
     powershellVersion: "5",
@@ -19,8 +19,12 @@ const ScriptGenerator = () => {
     frontendPort: "",
     backendPort: "",
     gitBranch: "development",
-  });
+  };
 
+  const [form, setForm] = useState(initialFormState);
+  const resetForm = () => {
+    setForm(initialFormState);
+  };
   const getProjectTypeOptions = (appType = form.applicationType) => {
     if (appType === "frontend") return ["React", "Angular"];
     if (appType === "backend") return ["Spring Boot", "Flask"];
@@ -164,9 +168,12 @@ const ScriptGenerator = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        toast.success("Script generated and downloaded successfully!");
+        resetForm();
       }
     } catch (error) {
       handleErrorResponse("generate-api", error.response);
+      resetForm();
     }
   };
 
