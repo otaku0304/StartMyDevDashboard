@@ -90,7 +90,7 @@ const ScriptGenerator = () => {
       return "Spring Boot Project Path";
     }
     return "Backend Project Path";
-  };
+  };      
 
   const handleSubmit = async () => {
     if (!["frontend", "backend", "fullstack"].includes(form.applicationType)) {
