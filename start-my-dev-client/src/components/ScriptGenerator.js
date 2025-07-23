@@ -98,6 +98,11 @@ const ScriptGenerator = () => {
       return;
     }
 
+    if (!form.gitBranch) {
+      toast.error("Invalid git branch selected.");
+      return;
+    }
+
     if (form.applicationType === "frontend") {
       if (!form.frontendPath) {
         toast.error(`Please provide the ${form.projectType} project path.`);
