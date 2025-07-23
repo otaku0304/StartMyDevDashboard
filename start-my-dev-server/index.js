@@ -56,6 +56,13 @@ app.post("/generate", async (req, res) => {
     });
   }
 
+  if (!gitBranch) {
+    return res.status(400).json({
+      responseCode: 400,
+      responseMessage: `Missing or gitBranch.`,
+    });
+  }
+
   if (applicationType === "frontend" && !frontendPort && !port) {
     return res.status(400).json({
       responseCode: 400,
