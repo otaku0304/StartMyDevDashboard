@@ -9,7 +9,6 @@ export default class ScriptGeneratorService {
 
   scriptGenerate(vehicleDetailsDTO) {
     const body = JSON.stringify(vehicleDetailsDTO);
-    console.log(body);
     return axiosInstance.post(this.Api + "generate", body);
   }
 }

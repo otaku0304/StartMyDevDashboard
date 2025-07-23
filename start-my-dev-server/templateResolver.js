@@ -40,7 +40,6 @@ const resolveTemplatePath = ({
     match.folder
   );
 
-  console.log("Resolved Template Path:", folderPath);
   return folderPath;
 };
 
