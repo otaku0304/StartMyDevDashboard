@@ -6,9 +6,7 @@ import { FaGithub } from "react-icons/fa";
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
 
-  const toggleTheme = () => {
-    setDarkMode((prev) => !prev);
-  };
+  const toggleTheme = () => setDarkMode((prev) => !prev);
 
   useEffect(() => {
     const root = document.getElementById("root-container");
@@ -19,7 +17,7 @@ const Header = () => {
   }, [darkMode]);
 
   return (
-    <header className="py-3 border-bottom shadow-sm sticky-top header-theme">
+    <header className="py-3 border-bottom sticky-top header-theme fade-in">
       <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Home navigation */}
         <Link
@@ -31,27 +29,53 @@ const Header = () => {
         </Link>
 
         <div className="d-flex align-items-center gap-3">
+          {/* GitHub Link */}
           <a
             href="https://github.com/otaku0304/StartMyDev"
             target="_blank"
             rel="noopener noreferrer"
             title="View on GitHub"
-            className="text-decoration-none"
+            className="text-dark text-decoration-none hover-glow"
           >
-            <FaGithub size={24} className="github-icon" />
+            <FaGithub size={22} />
           </a>
 
-          <Link to="/docs" className="text-decoration-none fw-semibold">
+          {/* Docs Link */}
+          <Link
+            to="/docs"
+            className="fw-semibold text-dark text-decoration-none hover-glow"
+          >
             Docs
           </Link>
+
+          {/* Theme Toggle */}
           <button
-            className={`btn btn-sm ${darkMode ? "btn-light" : "btn-dark"}`}
+            className={`btn btn-sm rounded-pill px-3 ${
+              darkMode ? "btn-light" : "btn-dark"
+            }`}
             onClick={toggleTheme}
           >
-            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+            {darkMode ? "☀ Light" : "🌙 Dark"}
           </button>
         </div>
       </div>
+
+      {/* Scoped styles */}
+      <style>{`
+        .fade-in {
+          animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hover-glow:hover {
+          text-shadow: 0 0 8px rgba(0,0,0,0.25);
+          transition: text-shadow 0.3s ease;
+        }
+      `}</style>
     </header>
   );
 };
