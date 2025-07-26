@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [showWindows, setShowWindows] = useState(false);
+  const location = useLocation();
+
+  const isWindowsRoute = location.pathname.startsWith("/docs/windows");
 
   return (
     <aside
@@ -20,31 +23,42 @@ const Sidebar = () => {
         {/* OS Dropdown: Windows */}
         <li className="nav-item">
           <p
-            className="nav-link text-dark mb-0 d-flex justify-content-between align-items-center"
-            style={{ cursor: "pointer"}}
+            className={`nav-link mb-0 d-flex justify-content-between align-items-center ${
+              isWindowsRoute ? "text-primary fw-semibold" : "text-dark"
+            }`}
+            style={{ cursor: "pointer" }}
             onClick={() => setShowWindows(!showWindows)}
           >
             OS: Windows
             <span className="me-5">{showWindows ? "▾" : "▸"}</span>
           </p>
 
-          {showWindows && (
+          {(showWindows || isWindowsRoute) && (
             <ul className="nav flex-column ms-3 mt-1">
               <li className="nav-item">
-                <NavLink to="/docs/windows/ps5" className="nav-link text-dark">
-                  PS5
+                <NavLink
+                  to="/docs/windows/ps5"
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"}`
+                  }
+                >
+                  Powershell-5
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/docs/windows/ps7" className="nav-link text-dark">
-                  PS7
+                <NavLink
+                  to="/docs/windows/ps7"
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"}`
+                  }
+                >
+                  Powershell-7
                 </NavLink>
               </li>
             </ul>
           )}
         </li>
 
-        {/* Privacy & Security */}
         <li className="nav-item">
           <NavLink to="/docs/privacy-security" className="nav-link text-dark">
             Privacy & Security

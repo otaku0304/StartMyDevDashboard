@@ -67,13 +67,6 @@ const GettingStarted = () => {
           manually.
         </li>
       </ol>
-
-      <pre className="p-3 rounded bg-light text-dark dark:bg-dark dark:text-light">
-        {`// Example setup:
-OS: Windows
-Application Type: Fullstack
-Project: React + Spring Boot`}
-      </pre>
     </div>
   );
 };

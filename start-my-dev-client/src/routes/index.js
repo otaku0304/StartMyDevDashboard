@@ -4,6 +4,8 @@ import ScriptGenerator from "../components/ScriptGenerator";
 import DocLayout from "../components/docs/DocLayout";
 import GettingStarted from "../components/docs/pages/GettingStarted";
 import PrivacyAndSecurity from "../components/docs/pages/PrivacyAndSecurity";
+import Ps5Setup from "../components/docs/pages/Ps5-Setup";
+import Ps7Setup from "../components/docs/pages/Ps7-Setup";
 
 const AppRoutes = () => {
   return (
@@ -13,10 +15,9 @@ const AppRoutes = () => {
       <Route path="/docs" element={<DocLayout />}>
         <Route index element={<GettingStarted />} />
         <Route path="getting-started" element={<GettingStarted />} />
-         <Route path="privacy-security" element={<PrivacyAndSecurity />} />
-        {/* <Route path="configuration" element={<Configuration />} />
-        <Route path="generate" element={<ScriptGeneration />} />
-        <Route path="spring-boot" element={<SpringBootSetup />} /> */}
+        <Route path="privacy-security" element={<PrivacyAndSecurity />} />
+        <Route path="windows/ps5" element={<Ps5Setup />} />
+        <Route path="windows/ps7" element={<Ps7Setup />} />
       </Route>
     </Routes>
   );
