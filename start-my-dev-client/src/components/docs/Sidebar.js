@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -39,7 +39,9 @@ const Sidebar = () => {
                 <NavLink
                   to="/docs/windows/ps5"
                   className={({ isActive }) =>
-                    `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"}`
+                    `nav-link ${
+                      isActive ? "text-primary fw-semibold" : "text-dark"
+                    }`
                   }
                 >
                   Powershell-5
@@ -49,7 +51,9 @@ const Sidebar = () => {
                 <NavLink
                   to="/docs/windows/ps7"
                   className={({ isActive }) =>
-                    `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"}`
+                    `nav-link ${
+                      isActive ? "text-primary fw-semibold" : "text-dark"
+                    }`
                   }
                 >
                   Powershell-7
