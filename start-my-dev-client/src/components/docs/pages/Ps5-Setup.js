@@ -38,13 +38,12 @@ export const Ps5Setup = () => {
   }
 
   return (
-    <div className="ps-3 pe-3">
-      <div className="d-flex justify-content-between align-items-center">
-        <h2 className="fw-bold text-dark mb-4">
-          {selectedScript.fileName} Overview
-        </h2>
-
-        <div className="mb-4">
+    <div className="container-fluid p-3">
+      <div className="row align-items-center mb-4">
+        <div className="col-12 col-md-8">
+          <h2 className="fw-bold text-dark">{selectedScript.fileName} Overview</h2>
+        </div>
+        <div className="col-12 col-md-4 mt-3 mt-md-0">
           <select
             className="form-select"
             value={selectedLabel}
@@ -60,9 +59,9 @@ export const Ps5Setup = () => {
       </div>
 
       <p className="text-muted mb-4">
-        <code>{selectedScript.fileName}</code> is a PowerShell script used to
-        set up and launch a <strong>{selectedScript.label}</strong> project. The
-        term <strong>{selectedScript.code}StartMyDev</strong> refers to{" "}
+        <code>{selectedScript.fileName}</code> is a PowerShell script used to set up and launch a{" "}
+        <strong>{selectedScript.label}</strong> project. The term{" "}
+        <strong>{selectedScript.code}StartMyDev</strong> refers to{" "}
         <strong>{selectedScript.label}</strong>.
       </p>
 
@@ -105,9 +104,9 @@ export const Ps5Setup = () => {
 
       <h5 className="fw-semibold mt-5 mb-3">Result</h5>
       <p className="text-muted">
-        The {selectedScript.label} project will automatically pull the latest
-        code, configure the environment, and launch your {selectedScript.label}{" "}
-        server in a new powershell {selectedScript.powershellVersion} window.
+        The {selectedScript.label} project will automatically pull the latest code,
+        configure the environment, and launch your {selectedScript.label} server in a new PowerShell{" "}
+        {selectedScript.powershellVersion} window.
       </p>
     </div>
   );

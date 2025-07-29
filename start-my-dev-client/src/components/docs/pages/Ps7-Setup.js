@@ -61,7 +61,9 @@ export const Ps5Setup = () => {
 
       <p className="text-muted mb-4">
         <code>{selectedScript.label}</code> is a PowerShell script used to set
-        up and launch a <strong>{selectedScript.label}</strong> project.
+        up and launch a <strong>{selectedScript.label}</strong> project.The
+        term <strong>{selectedScript.code}StartMyDev</strong> refers to{" "}
+        <strong>{selectedScript.label}</strong>.
       </p>
 
       <h5 className="fw-semibold mb-3">What the script does</h5>

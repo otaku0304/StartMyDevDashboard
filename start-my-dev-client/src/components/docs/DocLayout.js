@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 
 const DocLayout = () => {
   return (
-    <div className="d-flex" style={{ minHeight: "100vh" }}>
+    <div className="d-flex flex-column flex-md-row" style={{ minHeight: "100vh" }}>
       <Sidebar />
       <main className="p-4 flex-grow-1">
         <Outlet />
