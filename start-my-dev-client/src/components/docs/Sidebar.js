@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Button } from "react-bootstrap"; // Optional: if you're using React Bootstrap
+import { Button } from "react-bootstrap";
 
 const Sidebar = () => {
   const [showWindows, setShowWindows] = useState(false);
@@ -28,7 +28,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`border-end p-3 bg-white d-${isSidebarOpen ? "block" : "none"} d-md-block`}
+        className={`border-end p-3  d-${isSidebarOpen ? "block" : "none"} d-md-block`}
         style={{
           width: "250px",
           flexShrink: 0,
