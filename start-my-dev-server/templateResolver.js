@@ -34,11 +34,14 @@ const resolveTemplatePath = ({
     throw new Error("Unsupported applicationType + projectType combination.");
   }
 
-  const folderPath = path.join(
-    BASE_TEMPLATE_PATH,
-    `${os}-ps${powershellVersion}`,
-    match.folder
-  );
+  let osFolder;
+  if (os === "linux") {
+    osFolder = "linux";
+  } else {
+    osFolder = `${os}-ps${powershellVersion}`;
+  }
+
+  const folderPath = path.join(BASE_TEMPLATE_PATH, osFolder, match.folder);
 
   return folderPath;
 };

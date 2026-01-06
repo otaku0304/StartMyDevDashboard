@@ -57,8 +57,7 @@ const Home = () => {
           <h2 className="text-center fw-bold mb-4">How It Works</h2>
           <ol className="ps-3">
             <li className="mb-3">
-              Select your <strong>Operating System</strong> (Windows is
-              supported now, Linux/macOS coming soon).
+              Select your <strong>Operating System</strong> (compatible with windows and linux all over the project).
             </li>
             <li className="mb-3">
               Choose your <strong>Project Type</strong>: Frontend, Backend, or
@@ -97,7 +96,7 @@ const Home = () => {
             <li>Project types: Frontend, Backend, or Fullstack</li>
             <li>Works in dev, staging, or production environments</li>
             <li>Configure Java paths, ports, and Spring profiles with ease</li>
-            <li>Runs on Windows (cross-platform support coming soon)</li>
+            <li>Runs on Windows and Linux</li>
           </ul>
         </div>
         <div className="col-md-5 text-center">

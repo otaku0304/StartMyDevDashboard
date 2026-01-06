@@ -72,8 +72,8 @@ const ScriptGenerator = () => {
       return form.projectType === "React"
         ? "React Project Path"
         : form.projectType === "Angular"
-        ? "Angular Project Path"
-        : "Frontend Project Path";
+          ? "Angular Project Path"
+          : "Frontend Project Path";
     } else if (isFullstack) {
       return "React/Angular Project Path";
     }
@@ -90,7 +90,7 @@ const ScriptGenerator = () => {
       return "Spring Boot Project Path";
     }
     return "Backend Project Path";
-  };      
+  };
 
   const handleSubmit = async () => {
     if (!["frontend", "backend", "fullstack"].includes(form.applicationType)) {
@@ -210,22 +210,21 @@ const ScriptGenerator = () => {
                   value={os}
                   checked={form.os === os}
                   onChange={handleChange}
-                  disabled={os !== "windows"}
+                  disabled={os !== "windows" && os !== "linux"}
                 />
                 <label
-                  className={`form-check-label ${
-                    os !== "windows" ? "text-muted" : ""
-                  }`}
+                  className={`form-check-label ${os !== "windows" ? "text-muted" : ""
+                    }`}
                   htmlFor={os}
                 >
                   {os.charAt(0).toUpperCase() + os.slice(1)}{" "}
-                  {os !== "windows" && "(coming soon)"}
+                  {os !== "windows" && os !== "linux" && "(coming soon)"}
                 </label>
               </div>
             ))}
           </div>
           <small className="text-muted">
-            Currently, only Windows is supported.
+            Windows and Linux are supported.
           </small>
         </div>
 
