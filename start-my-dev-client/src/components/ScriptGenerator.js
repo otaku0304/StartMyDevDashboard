@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { handleErrorResponse } from "../core/tokenInterceptor/AxiosInstance";
 import ScriptGeneratorService from "../service/ScriptGeneratorService";
 import projectTypeMap from "./projectTypeMap";
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import { docco, dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { Modal, Button } from "react-bootstrap";
+import { FaSave, FaTrash, FaEye, FaTerminal, FaCode } from "react-icons/fa";
 
 const scriptGenerateService = new ScriptGeneratorService();
 
@@ -23,6 +27,35 @@ const ScriptGenerator = () => {
   };
 
   const [form, setForm] = useState(initialFormState);
+  const [showPreview, setShowPreview] = useState(false);
+  const [generatedScript, setGeneratedScript] = useState("");
+  const [savedConfigs, setSavedConfigs] = useState([]);
+  const [configName, setConfigName] = useState("");
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Check dark mode
+  useEffect(() => {
+    const isDark = document.getElementById("root-container")?.classList.contains("dark-mode");
+    setDarkMode(!!isDark);
+    // Listen for class changes on root (basic mutation observer alternative for simple global state)
+    const observer = new MutationObserver(() => {
+      const isNowDark = document.getElementById("root-container")?.classList.contains("dark-mode");
+      setDarkMode(!!isNowDark);
+    });
+    const root = document.getElementById("root-container");
+    if (root) observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  // Load Saved Configs
+  useEffect(() => {
+    const saved = localStorage.getItem("startmydev_configs");
+    if (saved) {
+      setSavedConfigs(JSON.parse(saved));
+    }
+  }, []);
+
   const resetForm = () => {
     setForm(initialFormState);
   };
@@ -91,6 +124,53 @@ const ScriptGenerator = () => {
     }
     return "Backend Project Path";
   };
+
+  // --- Logic for Saved Configs ---
+  const handleSaveConfig = () => {
+    if (!configName) return toast.error("Please enter a name for this configuration.");
+    const newConfigs = [...savedConfigs, { name: configName, config: form }];
+    setSavedConfigs(newConfigs);
+    localStorage.setItem("startmydev_configs", JSON.stringify(newConfigs));
+    setShowSaveModal(false);
+    setConfigName("");
+    toast.success("Configuration saved!");
+  };
+
+  const loadConfig = (saved) => {
+    setForm(saved.config);
+    toast.info(`Loaded configuration: ${saved.name}`);
+  };
+
+  const deleteConfig = (index) => {
+    const newConfigs = savedConfigs.filter((_, i) => i !== index);
+    setSavedConfigs(newConfigs);
+    localStorage.setItem("startmydev_configs", JSON.stringify(newConfigs));
+    toast.success("Configuration deleted.");
+  };
+
+  // --- Logic for Preview ---
+  const generatePreview = () => {
+    // Mock logic for preview - in a real app this would call an API or use a local template engine
+    const scriptType = form.os === "windows" ? "PowerShell" : "Bash";
+    const commentChar = form.os === "windows" ? "#" : "#";
+
+    let preview = `${commentChar} ${scriptType} Script Preview for ${form.projectType} (${form.os})\n\n`;
+    preview += `${commentChar} Configuration\n`;
+    if (form.frontendPath) preview += `Frontend Path: ${form.frontendPath}\n`;
+    if (form.backendPath) preview += `Backend Path: ${form.backendPath}\n`;
+    if (form.frontendPort) preview += `Frontend Port: ${form.frontendPort}\n`;
+    if (form.backendPort) preview += `Backend Port: ${form.backendPort}\n`;
+    preview += `Git Branch: ${form.gitBranch}\n\n`;
+    preview += `${commentChar} Launching commands...\n`;
+    if (form.os === "windows") {
+      preview += `Write-Host "Starting services..."\nStart-Process ...`;
+    } else {
+      preview += `echo "Starting services..."\n./launch-services.sh ...`;
+    }
+
+    setGeneratedScript(preview);
+    setShowPreview(true);
+  }
 
   const handleSubmit = async () => {
     if (!["frontend", "backend", "fullstack"].includes(form.applicationType)) {
@@ -186,7 +266,20 @@ const ScriptGenerator = () => {
   };
 
   return (
-    <div className="container py-5">
+    <div className={`container py-5 fade-in`}>
+
+      {/* Saved Configs Sidebar/Panel */}
+      {savedConfigs.length > 0 && (
+        <div className="mb-4 d-flex gap-2 overflow-auto py-2">
+          {savedConfigs.map((config, index) => (
+            <div key={index} className={`card p-2 px-3 flex-row align-items-center gap-2 shadow-sm border-0 ${darkMode ? 'bg-secondary text-white' : 'bg-light'}`} style={{ minWidth: 'fit-content' }}>
+              <span className="fw-bold small" style={{ cursor: 'pointer' }} onClick={() => loadConfig(config)}>{config.name}</span>
+              <FaTrash className="text-danger" style={{ cursor: 'pointer' }} onClick={() => deleteConfig(index)} size={12} />
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="text-center mb-5">
         <h1 className="fw-bold display-5">⚙️ StartMyDev Script Generator</h1>
         <p className="lead fw-normal">
@@ -195,7 +288,18 @@ const ScriptGenerator = () => {
         </p>
       </div>
 
-      <div className="card shadow-lg border-0 rounded-4 p-4">
+      <div className={`card shadow-lg border-0 rounded-4 p-4 ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}>
+
+        {/* Header Actions */}
+        <div className="d-flex justify-content-end mb-3 gap-2">
+          <button className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" onClick={() => setShowSaveModal(true)}>
+            <FaSave /> Save Config
+          </button>
+          <button className="btn btn-outline-info btn-sm d-flex align-items-center gap-1" onClick={generatePreview}>
+            <FaEye /> Preview Script
+          </button>
+        </div>
+
         {/* OS Selection */}
         <div className="mb-4">
           <label className="form-label fw-bold">Operating System</label>
@@ -463,6 +567,41 @@ const ScriptGenerator = () => {
           </button>
         </div>
       </div>
+
+      {/* Save Config Modal */}
+      <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)} centered>
+        <Modal.Header closeButton className={darkMode ? 'bg-dark text-white' : ''}>
+          <Modal.Title>Save Configuration</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={darkMode ? 'bg-dark text-white' : ''}>
+          <div className="mb-3">
+            <label className="form-label">Configuration Name</label>
+            <input type="text" className="form-control" value={configName} onChange={(e) => setConfigName(e.target.value)} placeholder="e.g. Work Backend" autoFocus />
+          </div>
+        </Modal.Body>
+        <Modal.Footer className={darkMode ? 'bg-dark text-white' : ''}>
+          <Button variant="secondary" onClick={() => setShowSaveModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleSaveConfig}>Save</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Preview Modal */}
+      <Modal show={showPreview} onHide={() => setShowPreview(false)} size="lg" centered>
+        <Modal.Header closeButton className={darkMode ? 'bg-dark text-white border-secondary' : ''}>
+          <Modal.Title className="d-flex align-items-center gap-2">
+            <FaCode /> Script Preview
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={darkMode ? 'bg-dark text-white' : 'bg-light'}>
+          <SyntaxHighlighter language={form.os === 'windows' ? 'powershell' : 'bash'} style={darkMode ? dracula : docco} customStyle={{ borderRadius: '8px', padding: '20px' }}>
+            {generatedScript}
+          </SyntaxHighlighter>
+        </Modal.Body>
+        <Modal.Footer className={darkMode ? 'bg-dark text-white border-secondary' : ''}>
+          <Button variant="secondary" onClick={() => setShowPreview(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+
     </div>
   );
 };
