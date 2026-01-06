@@ -31,7 +31,7 @@ const Header = () => {
         <div className="d-flex align-items-center gap-3">
           {/* GitHub Link */}
           <a
-            href="https://github.com/otaku0304/StartMyDev"
+            href="https://github.com/otaku0304/StartMyDevDashboard"
             target="_blank"
             rel="noopener noreferrer"
             title="View on GitHub"
