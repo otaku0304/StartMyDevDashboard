@@ -190,7 +190,7 @@ const ScriptGenerator = () => {
       <div className="text-center mb-5">
         <h1 className="fw-bold display-5">⚙️ StartMyDev Script Generator</h1>
         <p className="lead fw-normal">
-          Quickly generate PowerShell scripts to launch your frontend, backend,
+          Quickly generate scripts to launch your frontend, backend,
           or fullstack project in seconds.
         </p>
       </div>
