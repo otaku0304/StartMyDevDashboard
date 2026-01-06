@@ -13,7 +13,7 @@ const Home = () => {
             Supercharge Your Development
           </h1>
           <p className="lead fw-normal mt-3">
-            Instantly generate PowerShell setup scripts tailored to your tech
+            Instantly generate PowerShell (Windows) or Bash (Linux) setup scripts tailored to your tech
             stack. No IDEs, no manual installs — just run and go.
           </p>
           <Link to="/script-generator" className="btn btn-primary btn-lg mt-4">
@@ -45,7 +45,7 @@ const Home = () => {
           <p className="lead fw-normal mt-3">
             <strong>StartMyDev</strong> is a lightweight automation tool that
             helps you run ready-to-use frontend, backend, or fullstack
-            applications using generated PowerShell scripts — without opening
+            applications using generated automation scripts — without opening
             IDEs like VS Code or IntelliJ.
           </p>
         </div>
@@ -65,13 +65,13 @@ const Home = () => {
             </li>
             <li className="mb-3">
               Provide necessary configuration options (ports, project folder,
-              PowerShell version: PS5 or PS7, etc.).
+              PowerShell version for Windows, etc.).
             </li>
             <li className="mb-3">
               Download the generated script and run it by:
               <ul className="mt-2">
-                <li>Double-clicking the `.ps1` file</li>
-                <li>Or executing it manually in PowerShell</li>
+                <li>Double-clicking the `.ps1` (Windows) or executing `.sh` script (Linux)</li>
+                <li>Or running manually in your terminal</li>
               </ul>
             </li>
             <li className="mb-3">
@@ -91,7 +91,7 @@ const Home = () => {
         <div className="col-md-7 text-center text-md-start">
           <h2 className="fw-bold">Key Features</h2>
           <ul className="lead fw-normal mt-3">
-            <li>PowerShell support for both PS5 and PS7</li>
+            <li>Supports PowerShell (Windows) and Bash (Linux)</li>
             <li>Supports React, Angular, Spring Boot, Flask (more coming)</li>
             <li>Project types: Frontend, Backend, or Fullstack</li>
             <li>Works in dev, staging, or production environments</li>

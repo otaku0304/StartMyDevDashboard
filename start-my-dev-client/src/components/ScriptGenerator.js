@@ -190,7 +190,7 @@ const ScriptGenerator = () => {
       <div className="text-center mb-5">
         <h1 className="fw-bold display-5">⚙️ StartMyDev Script Generator</h1>
         <p className="lead fw-normal">
-          Quickly generate PowerShell scripts to launch your frontend, backend,
+          Quickly generate scripts to launch your frontend, backend,
           or fullstack project in seconds.
         </p>
       </div>
@@ -251,27 +251,31 @@ const ScriptGenerator = () => {
               ))}
             </div>
           </div>
-          <div className="col-md-6">
-            <label className="form-label fw-bold">PowerShell Version</label>
-            <div className="d-flex gap-3">
-              {["5", "7"].map((ver) => (
-                <div key={ver} className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="powershellVersion"
-                    id={`ps${ver}`}
-                    value={ver}
-                    checked={form.powershellVersion === ver}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={`ps${ver}`}>
-                    PowerShell {ver}
-                  </label>
-                </div>
-              ))}
+          {form.os === "windows" && (
+            <div className="col-md-6">
+              <label className="form-label fw-bold">
+                PowerShell Version (Windows Only)
+              </label>
+              <div className="d-flex gap-3">
+                {["5", "7"].map((ver) => (
+                  <div key={ver} className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="powershellVersion"
+                      id={`ps${ver}`}
+                      value={ver}
+                      checked={form.powershellVersion === ver}
+                      onChange={handleChange}
+                    />
+                    <label className="form-check-label" htmlFor={`ps${ver}`}>
+                      PowerShell {ver}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Project Type + Ports */}
