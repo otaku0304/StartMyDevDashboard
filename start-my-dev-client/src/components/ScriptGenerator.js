@@ -252,7 +252,7 @@ const ScriptGenerator = () => {
             </div>
           </div>
           <div className="col-md-6">
-            <label className="form-label fw-bold">PowerShell Version</label>
+            <label className="form-label fw-bold">PowerShell Version (Windows Only)</label>
             <div className="d-flex gap-3">
               {["5", "7"].map((ver) => (
                 <div key={ver} className="form-check">

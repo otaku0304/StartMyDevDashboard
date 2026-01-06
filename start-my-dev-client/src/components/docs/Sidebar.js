@@ -4,10 +4,12 @@ import { Button } from "react-bootstrap";
 
 const Sidebar = () => {
   const [showWindows, setShowWindows] = useState(false);
+  const [showLinux, setShowLinux] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
 
   const isWindowsRoute = location.pathname.startsWith("/docs/windows");
+  const isLinuxRoute = location.pathname.startsWith("/docs/linux");
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
@@ -47,9 +49,8 @@ const Sidebar = () => {
           {/* OS Dropdown: Windows */}
           <li className="nav-item">
             <p
-              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${
-                isWindowsRoute ? "text-primary fw-semibold" : "text-dark"
-              }`}
+              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${isWindowsRoute ? "text-primary fw-semibold" : "text-dark"
+                }`}
               style={{ cursor: "pointer" }}
               onClick={() => setShowWindows(!showWindows)}
             >
@@ -63,8 +64,7 @@ const Sidebar = () => {
                   <NavLink
                     to="/docs/windows/ps5"
                     className={({ isActive }) =>
-                      `nav-link ${
-                        isActive ? "text-primary fw-semibold" : "text-dark"
+                      `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"
                       }`
                     }
                   >
@@ -75,12 +75,40 @@ const Sidebar = () => {
                   <NavLink
                     to="/docs/windows/ps7"
                     className={({ isActive }) =>
-                      `nav-link ${
-                        isActive ? "text-primary fw-semibold" : "text-dark"
+                      `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"
                       }`
                     }
                   >
                     Powershell-7
+                  </NavLink>
+                </li>
+              </ul>
+            )}
+          </li>
+
+          {/* OS Dropdown: Linux */}
+          <li className="nav-item">
+            <p
+              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${isLinuxRoute ? "text-primary fw-semibold" : "text-dark"
+                }`}
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowLinux(!showLinux)}
+            >
+              OS: Linux
+              <span className="me-5">{showLinux ? "▾" : "▸"}</span>
+            </p>
+
+            {(showLinux || isLinuxRoute) && (
+              <ul className="nav flex-column ms-3 mt-1">
+                <li className="nav-item">
+                  <NavLink
+                    to="/docs/linux"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"
+                      }`
+                    }
+                  >
+                    Bash Script
                   </NavLink>
                 </li>
               </ul>

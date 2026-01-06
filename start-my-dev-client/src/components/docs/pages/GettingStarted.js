@@ -13,7 +13,7 @@ const GettingStarted = () => {
         <li>
           Choose the type of OS:
           <strong>Windows</strong>,
-          <span className="text-muted">Linux (Coming Soon)</span>,
+          <strong>Linux</strong>,
           <span className="text-muted">MacOS (Coming Soon)</span>
         </li>
 
@@ -53,11 +53,10 @@ const GettingStarted = () => {
           Download the generated script and run it by:
           <ul>
             <li>
-              Double-clicking the <code>.ps1</code> file
+              <strong>Windows:</strong> Double-click the <code>.ps1</code> file or run via PowerShell.
             </li>
             <li>
-              Or executing it manually in PowerShell (right-click → Run with
-              PowerShell or use terminal)
+              <strong>Linux:</strong> Run <code>chmod +x *.sh</code> and execute the script (<code>./script.sh</code>).
             </li>
           </ul>
         </li>

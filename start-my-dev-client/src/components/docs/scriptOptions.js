@@ -15,4 +15,12 @@ export const windowsScriptDocs = {
     { label: "React + Spring Boot" },
     { label: "Angular + Spring Boot" },
   ],
+  linux: [
+    { label: "SpringBoot" },
+    { label: "Flask" },
+    { label: "React" },
+    { label: "Angular" },
+    { label: "React + Spring Boot" },
+    { label: "Angular + Spring Boot" },
+  ],
 };
