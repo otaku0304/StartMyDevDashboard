@@ -127,13 +127,22 @@ const ScriptGenerator = () => {
 
   // --- Logic for Saved Configs ---
   const handleSaveConfig = () => {
-    if (!configName) return toast.error("Please enter a name for this configuration.");
-    const newConfigs = [...savedConfigs, { name: configName, config: form }];
+    const trimmedName = configName.trim();
+
+    if (!trimmedName) {
+      return toast.error("Please enter a valid name for this configuration.");
+    }
+
+    if (savedConfigs.some(config => config.name.toLowerCase() === trimmedName.toLowerCase())) {
+      return toast.error("A configuration with this name already exists. Please choose a different name.");
+    }
+
+    const newConfigs = [...savedConfigs, { name: trimmedName, config: form }];
     setSavedConfigs(newConfigs);
     localStorage.setItem("startmydev_configs", JSON.stringify(newConfigs));
     setShowSaveModal(false);
     setConfigName("");
-    toast.success("Configuration saved!");
+    toast.success("Configuration saved successfully!");
   };
 
   const loadConfig = (saved) => {
