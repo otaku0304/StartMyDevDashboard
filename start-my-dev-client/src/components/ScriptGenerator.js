@@ -6,7 +6,7 @@ import projectTypeMap from "./projectTypeMap";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco, dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { Modal, Button } from "react-bootstrap";
-import { FaSave, FaTrash, FaEye, FaTerminal, FaCode } from "react-icons/fa";
+import { FaSave, FaTrash, FaEye, FaTerminal, FaCode, FaCopy } from "react-icons/fa";
 
 const scriptGenerateService = new ScriptGeneratorService();
 
@@ -295,9 +295,6 @@ const ScriptGenerator = () => {
           <button className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" onClick={() => setShowSaveModal(true)}>
             <FaSave /> Save Config
           </button>
-          <button className="btn btn-outline-info btn-sm d-flex align-items-center gap-1" onClick={generatePreview}>
-            <FaEye /> Preview Script
-          </button>
         </div>
 
         {/* OS Selection */}
@@ -560,10 +557,14 @@ const ScriptGenerator = () => {
             />
           </div>
         </div>
-        {/* Submit */}
-        <div className="text-center mt-4">
-          <button className="btn btn-primary px-5" onClick={handleSubmit}>
-            Generate & Download
+
+        {/* Submit & Preview Actions */}
+        <div className="d-flex justify-content-center gap-3 mt-5">
+          <button className="btn btn-lg btn-outline-secondary px-4 d-flex align-items-center gap-2" onClick={generatePreview}>
+            <FaEye /> Preview Script
+          </button>
+          <button className="btn btn-lg btn-primary px-5 d-flex align-items-center gap-2 shadow" onClick={handleSubmit}>
+            <FaTerminal /> Generate & Download
           </button>
         </div>
       </div>
@@ -586,19 +587,40 @@ const ScriptGenerator = () => {
       </Modal>
 
       {/* Preview Modal */}
-      <Modal show={showPreview} onHide={() => setShowPreview(false)} size="lg" centered>
-        <Modal.Header closeButton className={darkMode ? 'bg-dark text-white border-secondary' : ''}>
-          <Modal.Title className="d-flex align-items-center gap-2">
-            <FaCode /> Script Preview
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className={darkMode ? 'bg-dark text-white' : 'bg-light'}>
-          <SyntaxHighlighter language={form.os === 'windows' ? 'powershell' : 'bash'} style={darkMode ? dracula : docco} customStyle={{ borderRadius: '8px', padding: '20px' }}>
-            {generatedScript}
-          </SyntaxHighlighter>
+      <Modal show={showPreview} onHide={() => setShowPreview(false)} size="lg" centered contentClassName="border-0 rounded-4 overflow-hidden">
+        <Modal.Body className="p-0">
+          {/* Terminal Header */}
+          <div className="bg-dark text-white p-2 px-3 d-flex justify-content-between align-items-center">
+            <div className="d-flex gap-2">
+              <div className="rounded-circle bg-danger" style={{ width: 12, height: 12 }}></div>
+              <div className="rounded-circle bg-warning" style={{ width: 12, height: 12 }}></div>
+              <div className="rounded-circle bg-success" style={{ width: 12, height: 12 }}></div>
+            </div>
+            <div className="small opacity-50 font-monospace">
+              preview.{form.os === 'windows' ? 'ps1' : 'sh'}
+            </div>
+            <div style={{ width: 40 }}></div> {/* Spacer for centering */}
+          </div>
+
+          {/* Code Content */}
+          <div style={{ maxHeight: '60vh', overflow: 'auto' }} className={darkMode ? 'bg-dark' : 'bg-light'}>
+            <SyntaxHighlighter
+              language={form.os === 'windows' ? 'powershell' : 'bash'}
+              style={darkMode ? dracula : docco}
+              customStyle={{ margin: 0, padding: '20px', minHeight: '100%' }}
+            >
+              {generatedScript}
+            </SyntaxHighlighter>
+          </div>
         </Modal.Body>
-        <Modal.Footer className={darkMode ? 'bg-dark text-white border-secondary' : ''}>
-          <Button variant="secondary" onClick={() => setShowPreview(false)}>Close</Button>
+        <Modal.Footer className={`border-top-0 p-3 ${darkMode ? 'bg-dark' : 'bg-light'}`}>
+          <Button variant="outline-secondary" onClick={() => {
+            navigator.clipboard.writeText(generatedScript);
+            toast.success("Copied to clipboard!");
+          }} className="d-flex align-items-center gap-2">
+            <FaCopy /> Copy Code
+          </Button>
+          <Button variant="primary" onClick={() => setShowPreview(false)}>Close</Button>
         </Modal.Footer>
       </Modal>
 
