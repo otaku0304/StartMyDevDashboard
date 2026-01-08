@@ -4,17 +4,46 @@ const fs = require("fs-extra");
 const path = require("path");
 const archiver = require("archiver");
 const stream = require("stream");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const { resolveTemplatePath } = require("./templateResolver");
 
 const app = express();
-app.use(cors());
+
+
+// 1. Security Headers
+app.use(helmet());
+
+// 2. CORS (Restrict in prod if needed, keep open for dev)
+app.use(cors()); // Configure with specific origins in production
+
+// 3. Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again after 15 minutes",
+});
+app.use(limiter);
+
 app.use(express.json());
+
+// 4. Input Sanitization Helper
+const sanitizeInput = (input) => {
+  if (typeof input !== "string") return input;
+  // Remove potentially dangerous characters for shell scripts
+  // Allow alphanumeric, standard path chars, and common punctuation
+  // But be careful with quotes and semicolons if not handled
+  // For this generator, we'll strip characters that break out of strings or execute commands
+  // This is a basic sanitizer; adjust based on threat model
+  return input.replace(/[`$();|&<>]/g, "");
+};
 
 const readAndInject = async (filePath, values) => {
   let content = await fs.readFile(filePath, "utf8");
   for (const key in values) {
-    content = content.replace(new RegExp(`{{${key}}}`, "g"), values[key]);
+    const sanitizedValue = sanitizeInput(values[key] || "");
+    content = content.replace(new RegExp(`{{${key}}}`, "g"), sanitizedValue);
   }
   return content;
 };

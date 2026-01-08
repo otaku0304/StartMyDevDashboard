@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { windowsScriptDocs } from "../scriptOptions";
 import { windowsData } from "./scriptData";
 
@@ -39,6 +40,10 @@ export const LinuxSetup = () => {
 
     return (
         <div className="container-fluid p-3">
+            <Helmet>
+                <title>{selectedScript.label} Linux Setup | StartMyDev</title>
+                <meta name="description" content={`Learn how to setup and run ${selectedScript.label} on Linux using StartMyDev generated Bash scripts.`} />
+            </Helmet>
             <div className="row align-items-center mb-4">
                 <div className="col-12 col-md-8">
                     <h2 className="fw-bold text-dark">{selectedScript.fileName} Overview</h2>

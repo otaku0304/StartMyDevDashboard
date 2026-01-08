@@ -1,6 +1,12 @@
+import { Helmet } from "react-helmet-async";
+
 const GettingStarted = () => {
   return (
     <div>
+      <Helmet>
+        <title>Getting Started | StartMyDev</title>
+        <meta name="description" content="Learn how to get started with StartMyDev configuration generator for your development projects." />
+      </Helmet>
       <h2 className="fw-bold">Getting Started</h2>
       <p>
         A simple overview of what StartMyDev does and how users can benefit from

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import heroImg from "../assets/hero.svg";
 import reportImg from "../assets/report.svg";
 import relaxImg from "../assets/relax.svg";
@@ -6,6 +7,12 @@ import relaxImg from "../assets/relax.svg";
 const Home = () => {
   return (
     <div className="container-fluid py-5">
+      <Helmet>
+        <title>StartMyDev | Automate Your Project Setup</title>
+        <meta name="description" content="Instantly generate PowerShell and Bash setup scripts for React, Angular, Spring Boot, and Flask projects. Automate your development environment with StartMyDev." />
+        <meta name="keywords" content="developer tools, project generator, script generator, powershell scripts, bash scripts, react setup, spring boot setup, automation" />
+      </Helmet>
+
       {/* Hero Section */}
       <section className="row align-items-center mb-5">
         <div className="col-md-7 text-center text-md-start">

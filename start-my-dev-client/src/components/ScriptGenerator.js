@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { toast } from "react-toastify";
 import { handleErrorResponse } from "../core/tokenInterceptor/AxiosInstance";
 import ScriptGeneratorService from "../service/ScriptGeneratorService";
@@ -201,6 +202,10 @@ const ScriptGenerator = () => {
         toast.error(`Please provide the ${form.projectType} port.`);
         return;
       }
+      if (isNaN(form.frontendPort)) {
+        toast.error(`${form.projectType} port must be a number.`);
+        return;
+      }
     }
 
     if (form.applicationType === "backend") {
@@ -212,6 +217,10 @@ const ScriptGenerator = () => {
         toast.error(`Please provide the ${form.projectType} port.`);
         return;
       }
+      if (isNaN(form.backendPort)) {
+        toast.error(`${form.projectType} port must be a number.`);
+        return;
+      }
     }
 
     if (form.applicationType === "fullstack") {
@@ -221,6 +230,10 @@ const ScriptGenerator = () => {
       }
       if (!form.frontendPort || !form.backendPort) {
         toast.error("Please provide both frontend and backend ports.");
+        return;
+      }
+      if (isNaN(form.frontendPort) || isNaN(form.backendPort)) {
+        toast.error("Ports must be numeric values.");
         return;
       }
     }
@@ -276,16 +289,31 @@ const ScriptGenerator = () => {
 
   return (
     <div className={`container py-5 fade-in`}>
+      <Helmet>
+        <title>Script Generator | StartMyDev</title>
+        <meta name="description" content="Generate custom windows and linux scripts for your development stack. Support for React, Angular, Spring Boot, Flask, and more." />
+      </Helmet>
 
       {/* Saved Configs Sidebar/Panel */}
       {savedConfigs.length > 0 && (
-        <div className="mb-4 d-flex gap-2 overflow-auto py-2">
-          {savedConfigs.map((config, index) => (
-            <div key={index} className={`card p-2 px-3 flex-row align-items-center gap-2 shadow-sm border-0 ${darkMode ? 'bg-secondary text-white' : 'bg-light'}`} style={{ minWidth: 'fit-content' }}>
-              <span className="fw-bold small" style={{ cursor: 'pointer' }} onClick={() => loadConfig(config)}>{config.name}</span>
-              <FaTrash className="text-danger" style={{ cursor: 'pointer' }} onClick={() => deleteConfig(index)} size={12} />
-            </div>
-          ))}
+        <div className="mb-4 d-flex justify-content-between align-items-center">
+          <div className="d-flex gap-2 overflow-auto py-2 flex-grow-1">
+            {savedConfigs.map((config, index) => (
+              <div key={index} className={`card p-2 px-3 flex-row align-items-center gap-2 shadow-sm border-0 ${darkMode ? 'bg-secondary text-white' : 'bg-light'}`} style={{ minWidth: 'fit-content' }}>
+                <span className="fw-bold small" style={{ cursor: 'pointer' }} onClick={() => loadConfig(config)}>{config.name}</span>
+                <FaTrash className="text-danger" style={{ cursor: 'pointer' }} onClick={() => deleteConfig(index)} size={12} />
+              </div>
+            ))}
+          </div>
+          <button className="btn btn-sm text-danger fw-bold ms-3" style={{ whiteSpace: 'nowrap' }} onClick={() => {
+            if (window.confirm("Are you sure you want to clear all saved configurations?")) {
+              setSavedConfigs([]);
+              localStorage.removeItem("startmydev_configs");
+              toast.success("All saved configurations cleared.");
+            }
+          }}>
+            Clear All
+          </button>
         </div>
       )}
 
