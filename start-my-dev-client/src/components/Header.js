@@ -28,9 +28,8 @@ const Header = () => {
 
   return (
     <header
-      className={`py-3 border-bottom sticky-top header-theme fade-in ${
-        scrolled ? "header-scrolled" : ""
-      }`}
+      className={`py-3 border-bottom sticky-top header-theme fade-in ${scrolled ? "header-scrolled" : ""
+        }`}
     >
       <div className="container-fluid d-flex justify-content-between align-items-center">
         {/* Logo & Brand */}
@@ -54,7 +53,7 @@ const Header = () => {
             title="View on GitHub"
             className="nav-icon-link"
           >
-            <FaGithub size={22} className="nav-icon" />
+            <FaGithub size={20} className="nav-icon" />
           </a>
 
           {/* Docs Link */}
@@ -62,7 +61,7 @@ const Header = () => {
             Docs
           </Link>
 
-          {/* Theme Toggle with Animation */}
+          {/* Theme Toggle */}
           <button
             className="theme-toggle-btn"
             onClick={toggleTheme}
@@ -70,9 +69,9 @@ const Header = () => {
           >
             <div className="theme-toggle-inner">
               {darkMode ? (
-                <FaSun className="theme-icon sun-icon" />
+                <FaSun className="theme-icon" />
               ) : (
-                <FaMoon className="theme-icon moon-icon" />
+                <FaMoon className="theme-icon" />
               )}
             </div>
           </button>
@@ -83,78 +82,69 @@ const Header = () => {
       <style>{`
         /* Header Transitions */
         .header-theme {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.25s ease;
         }
 
         .header-scrolled {
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
         }
 
         .dark-mode .header-scrolled {
-          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Logo Animation */
+        /* Logo - Subtle Animation */
         .logo-wrapper {
-          position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
         .logo-img {
-          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          transition: transform 0.3s ease;
           filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .logo-container:hover .logo-img {
-          transform: rotate(360deg) scale(1.1);
-          filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4));
+          transform: scale(1.05);
         }
 
         .brand-name {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           font-size: 1.25rem;
-          letter-spacing: -0.02em;
-          transition: all 0.3s ease;
-        }
-
-        .logo-container:hover .brand-name {
-          letter-spacing: 0.02em;
+          letter-spacing: -0.01em;
+          font-family: 'Space Grotesk', 'Poppins', sans-serif;
         }
 
         /* Navigation Icons */
         .nav-icon-link {
-          position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          transition: all 0.25s ease;
           text-decoration: none;
         }
 
         .nav-icon {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: transform 0.25s ease;
         }
 
         .nav-icon-link:hover {
-          background: rgba(99, 102, 241, 0.1);
-          transform: translateY(-2px);
+          background: rgba(79, 70, 229, 0.1);
         }
 
         .nav-icon-link:hover .nav-icon {
-          transform: scale(1.2);
-          filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+          transform: scale(1.1);
         }
 
         .dark-mode .nav-icon-link:hover {
-          background: rgba(99, 102, 241, 0.2);
+          background: rgba(99, 102, 241, 0.15);
         }
 
         /* Navigation Link */
@@ -165,40 +155,37 @@ const Header = () => {
           font-size: 0.95rem;
           text-decoration: none;
           border-radius: 8px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          overflow: hidden;
+          transition: all 0.25s ease;
         }
 
-        .nav-link-custom::before {
+        .nav-link-custom::after {
           content: '';
           position: absolute;
           bottom: 0;
           left: 50%;
           width: 0;
           height: 2px;
-          background: linear-gradient(90deg, #667eea, #764ba2);
+          background: linear-gradient(90deg, #4f46e5, #7c3aed);
           transform: translateX(-50%);
-          transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: width 0.25s ease;
         }
 
         .nav-link-custom:hover {
-          background: rgba(99, 102, 241, 0.1);
-          transform: translateY(-2px);
+          background: rgba(79, 70, 229, 0.1);
         }
 
-        .nav-link-custom:hover::before {
-          width: 80%;
+        .nav-link-custom:hover::after {
+          width: 70%;
         }
 
         .dark-mode .nav-link-custom:hover {
-          background: rgba(99, 102, 241, 0.2);
+          background: rgba(99, 102, 241, 0.15);
         }
 
-        /* Theme Toggle Button */
+        /* Theme Toggle Button - Refined */
         .theme-toggle-btn {
-          position: relative;
-          width: 50px;
-          height: 50px;
+          width: 44px;
+          height: 44px;
           border: none;
           background: transparent;
           cursor: pointer;
@@ -209,22 +196,20 @@ const Header = () => {
         }
 
         .theme-toggle-inner {
-          position: relative;
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-          overflow: hidden;
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+          transition: all 0.25s ease;
         }
 
         .theme-toggle-btn:hover .theme-toggle-inner {
-          transform: scale(1.1) rotate(10deg);
-          box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
         }
 
         .theme-toggle-btn:active .theme-toggle-inner {
@@ -233,38 +218,19 @@ const Header = () => {
 
         .theme-icon {
           color: white;
-          font-size: 1.25rem;
-          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .sun-icon {
-          animation: rotateIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .moon-icon {
-          animation: rotateIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes rotateIn {
-          from {
-            transform: rotate(-180deg) scale(0);
-            opacity: 0;
-          }
-          to {
-            transform: rotate(0deg) scale(1);
-            opacity: 1;
-          }
+          font-size: 1.1rem;
+          transition: transform 0.3s ease;
         }
 
         /* Fade In Animation */
         .fade-in {
-          animation: fadeInHeader 0.6s ease-in-out;
+          animation: fadeInHeader 0.5s ease-in-out;
         }
 
         @keyframes fadeInHeader {
           from {
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateY(-10px);
           }
           to {
             opacity: 1;
@@ -284,12 +250,12 @@ const Header = () => {
           }
 
           .theme-toggle-inner {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
           }
 
           .theme-icon {
-            font-size: 1.1rem;
+            font-size: 1rem;
           }
         }
       `}</style>
