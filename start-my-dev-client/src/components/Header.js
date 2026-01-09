@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaSun, FaMoon } from "react-icons/fa";
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const toggleTheme = () => setDarkMode((prev) => !prev);
 
@@ -16,18 +17,34 @@ const Header = () => {
     }
   }, [darkMode]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="py-3 border-bottom sticky-top header-theme fade-in">
+    <header
+      className={`py-3 border-bottom sticky-top header-theme fade-in ${
+        scrolled ? "header-scrolled" : ""
+      }`}
+    >
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Home navigation */}
+        {/* Logo & Brand */}
         <Link
           to="/"
-          className="d-flex align-items-center gap-2 text-decoration-none text-dark"
+          className="d-flex align-items-center gap-2 text-decoration-none logo-container"
         >
-          <img src={logo} alt="Logo" height="32" />
-          <h5 className="m-0 fw-bold">StartMyDev</h5>
+          <div className="logo-wrapper">
+            <img src={logo} alt="StartMyDev Logo" height="36" className="logo-img" />
+          </div>
+          <h5 className="m-0 fw-bold brand-name">StartMyDev</h5>
         </Link>
 
+        {/* Navigation & Actions */}
         <div className="d-flex align-items-center gap-3">
           {/* GitHub Link */}
           <a
@@ -35,45 +52,245 @@ const Header = () => {
             target="_blank"
             rel="noopener noreferrer"
             title="View on GitHub"
-            className="text-dark text-decoration-none hover-glow"
+            className="nav-icon-link"
           >
-            <FaGithub size={22} />
+            <FaGithub size={22} className="nav-icon" />
           </a>
 
           {/* Docs Link */}
-          <Link
-            to="/docs"
-            className="fw-semibold text-dark text-decoration-none hover-glow"
-          >
+          <Link to="/docs" className="nav-link-custom">
             Docs
           </Link>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle with Animation */}
           <button
-            className={`btn btn-sm rounded-pill px-3 ${
-              darkMode ? "btn-light" : "btn-dark"
-            }`}
+            className="theme-toggle-btn"
             onClick={toggleTheme}
+            aria-label="Toggle theme"
           >
-            {darkMode ? "☀ Light" : "🌙 Dark"}
+            <div className="theme-toggle-inner">
+              {darkMode ? (
+                <FaSun className="theme-icon sun-icon" />
+              ) : (
+                <FaMoon className="theme-icon moon-icon" />
+              )}
+            </div>
           </button>
         </div>
       </div>
 
-      {/* Scoped styles */}
+      {/* Scoped Styles */}
       <style>{`
+        /* Header Transitions */
+        .header-theme {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header-scrolled {
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .header-scrolled {
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Logo Animation */
+        .logo-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .logo-img {
+          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-container:hover .logo-img {
+          transform: rotate(360deg) scale(1.1);
+          filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4));
+        }
+
+        .brand-name {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          font-size: 1.25rem;
+          letter-spacing: -0.02em;
+          transition: all 0.3s ease;
+        }
+
+        .logo-container:hover .brand-name {
+          letter-spacing: 0.02em;
+        }
+
+        /* Navigation Icons */
+        .nav-icon-link {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          text-decoration: none;
+        }
+
+        .nav-icon {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-icon-link:hover {
+          background: rgba(99, 102, 241, 0.1);
+          transform: translateY(-2px);
+        }
+
+        .nav-icon-link:hover .nav-icon {
+          transform: scale(1.2);
+          filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+        }
+
+        .dark-mode .nav-icon-link:hover {
+          background: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Navigation Link */
+        .nav-link-custom {
+          position: relative;
+          padding: 0.5rem 1rem;
+          font-weight: 600;
+          font-size: 0.95rem;
+          text-decoration: none;
+          border-radius: 8px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow: hidden;
+        }
+
+        .nav-link-custom::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #667eea, #764ba2);
+          transform: translateX(-50%);
+          transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link-custom:hover {
+          background: rgba(99, 102, 241, 0.1);
+          transform: translateY(-2px);
+        }
+
+        .nav-link-custom:hover::before {
+          width: 80%;
+        }
+
+        .dark-mode .nav-link-custom:hover {
+          background: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+          position: relative;
+          width: 50px;
+          height: 50px;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .theme-toggle-inner {
+          position: relative;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          overflow: hidden;
+        }
+
+        .theme-toggle-btn:hover .theme-toggle-inner {
+          transform: scale(1.1) rotate(10deg);
+          box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+        }
+
+        .theme-toggle-btn:active .theme-toggle-inner {
+          transform: scale(0.95);
+        }
+
+        .theme-icon {
+          color: white;
+          font-size: 1.25rem;
+          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .sun-icon {
+          animation: rotateIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .moon-icon {
+          animation: rotateIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes rotateIn {
+          from {
+            transform: rotate(-180deg) scale(0);
+            opacity: 0;
+          }
+          to {
+            transform: rotate(0deg) scale(1);
+            opacity: 1;
+          }
+        }
+
+        /* Fade In Animation */
         .fade-in {
-          animation: fadeIn 0.6s ease-in-out;
+          animation: fadeInHeader 0.6s ease-in-out;
         }
 
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInHeader {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        .hover-glow:hover {
-          text-shadow: 0 0 8px rgba(0,0,0,0.25);
-          transition: text-shadow 0.3s ease;
+        /* Responsive */
+        @media (max-width: 768px) {
+          .brand-name {
+            font-size: 1.1rem;
+          }
+
+          .nav-link-custom {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+          }
+
+          .theme-toggle-inner {
+            width: 40px;
+            height: 40px;
+          }
+
+          .theme-icon {
+            font-size: 1.1rem;
+          }
         }
       `}</style>
     </header>
