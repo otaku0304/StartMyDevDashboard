@@ -1,19 +1,9 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaHeart, FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => setLoaded(true), 100);
-  }, []);
-
   return (
-    <footer
-      className={`footer-theme py-5 mt-auto border-top ${loaded ? "fade-in" : "opacity-0"
-        }`}
-    >
+    <footer className="footer-theme py-5 mt-auto border-top fade-in">
       <div className="container">
         <div className="row g-4 align-items-center justify-content-between">
 
