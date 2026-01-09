@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { FaHeart, FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
@@ -27,8 +28,8 @@ const Footer = () => {
           {/* Links */}
           <div className="col-md-4 text-center">
             <div className="d-flex justify-content-center gap-3">
-              <a href="/script-generator" className="footer-link small">Generator</a>
-              <a href="/docs" className="footer-link small">Documentation</a>
+              <Link to="/script-generator" className="footer-link small">Generator</Link>
+              <Link to="/docs" className="footer-link small">Documentation</Link>
               <a href="https://github.com/otaku0304/StartMyDevDashboard" target="_blank" rel="noopener noreferrer" className="footer-link small">GitHub</a>
             </div>
           </div>

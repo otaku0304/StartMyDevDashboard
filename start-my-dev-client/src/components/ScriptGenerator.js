@@ -7,7 +7,20 @@ import projectTypeMap from "./projectTypeMap";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco, dracula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { Modal, Button } from "react-bootstrap";
-import { FaSave, FaTrash, FaEye, FaTerminal, FaCode, FaCopy } from "react-icons/fa";
+import {
+  FaSave,
+  FaTrash,
+  FaEye,
+  FaTerminal,
+  FaCopy,
+  FaWindows,
+  FaLinux,
+  FaApple,
+  FaServer,
+  FaLaptopCode,
+  FaLayerGroup,
+  FaMagic
+} from "react-icons/fa";
 
 const scriptGenerateService = new ScriptGeneratorService();
 
@@ -37,13 +50,13 @@ const ScriptGenerator = () => {
 
   // Check dark mode
   useEffect(() => {
-    const isDark = document.getElementById("root-container")?.classList.contains("dark-mode");
-    setDarkMode(!!isDark);
-    // Listen for class changes on root (basic mutation observer alternative for simple global state)
-    const observer = new MutationObserver(() => {
-      const isNowDark = document.getElementById("root-container")?.classList.contains("dark-mode");
-      setDarkMode(!!isNowDark);
-    });
+    const checkDarkMode = () => {
+      const isDark = document.getElementById("root-container")?.classList.contains("dark-mode");
+      setDarkMode(!!isDark);
+    };
+
+    checkDarkMode();
+    const observer = new MutationObserver(checkDarkMode);
     const root = document.getElementById("root-container");
     if (root) observer.observe(root, { attributes: true, attributeFilter: ["class"] });
     return () => observer.disconnect();
@@ -70,6 +83,17 @@ const ScriptGenerator = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setForm((prev) => {
+      const updatedForm = { ...prev, [name]: value };
+      if (name === "applicationType") {
+        const options = getProjectTypeOptions(value);
+        updatedForm.projectType = options[0] || "";
+      }
+      return updatedForm;
+    });
+  };
+
+  const updateFormValue = (name, value) => {
     setForm((prev) => {
       const updatedForm = { ...prev, [name]: value };
       if (name === "applicationType") {
@@ -149,9 +173,11 @@ const ScriptGenerator = () => {
   const loadConfig = (saved) => {
     setForm(saved.config);
     toast.info(`Loaded configuration: ${saved.name}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const deleteConfig = (index) => {
+  const deleteConfig = (e, index) => {
+    e.stopPropagation();
     const newConfigs = savedConfigs.filter((_, i) => i !== index);
     setSavedConfigs(newConfigs);
     localStorage.setItem("startmydev_configs", JSON.stringify(newConfigs));
@@ -160,7 +186,6 @@ const ScriptGenerator = () => {
 
   // --- Logic for Preview ---
   const generatePreview = () => {
-    // Mock logic for preview - in a real app this would call an API or use a local template engine
     const scriptType = form.os === "windows" ? "PowerShell" : "Bash";
     const commentChar = form.os === "windows" ? "#" : "#";
 
@@ -193,49 +218,23 @@ const ScriptGenerator = () => {
       return;
     }
 
+    // Validation logic...
     if (form.applicationType === "frontend") {
-      if (!form.frontendPath) {
-        toast.error(`Please provide the ${form.projectType} project path.`);
-        return;
-      }
-      if (!form.frontendPort) {
-        toast.error(`Please provide the ${form.projectType} port.`);
-        return;
-      }
-      if (isNaN(form.frontendPort)) {
-        toast.error(`${form.projectType} port must be a number.`);
-        return;
-      }
+      if (!form.frontendPath) return toast.error(`Please provide the ${form.projectType} project path.`);
+      if (!form.frontendPort) return toast.error(`Please provide the ${form.projectType} port.`);
+      if (isNaN(form.frontendPort)) return toast.error(`${form.projectType} port must be a number.`);
     }
 
     if (form.applicationType === "backend") {
-      if (!form.backendPath) {
-        toast.error(`Please provide the ${form.projectType} project path.`);
-        return;
-      }
-      if (!form.backendPort) {
-        toast.error(`Please provide the ${form.projectType} port.`);
-        return;
-      }
-      if (isNaN(form.backendPort)) {
-        toast.error(`${form.projectType} port must be a number.`);
-        return;
-      }
+      if (!form.backendPath) return toast.error(`Please provide the ${form.projectType} project path.`);
+      if (!form.backendPort) return toast.error(`Please provide the ${form.projectType} port.`);
+      if (isNaN(form.backendPort)) return toast.error(`${form.projectType} port must be a number.`);
     }
 
     if (form.applicationType === "fullstack") {
-      if (!form.frontendPath || !form.backendPath) {
-        toast.error("Please provide both frontend and backend project paths.");
-        return;
-      }
-      if (!form.frontendPort || !form.backendPort) {
-        toast.error("Please provide both frontend and backend ports.");
-        return;
-      }
-      if (isNaN(form.frontendPort) || isNaN(form.backendPort)) {
-        toast.error("Ports must be numeric values.");
-        return;
-      }
+      if (!form.frontendPath || !form.backendPath) return toast.error("Please provide both frontend and backend project paths.");
+      if (!form.frontendPort || !form.backendPort) return toast.error("Please provide both frontend and backend ports.");
+      if (isNaN(form.frontendPort) || isNaN(form.backendPort)) return toast.error("Ports must be numeric values.");
     }
 
     const mappedProjectType =
@@ -288,379 +287,307 @@ const ScriptGenerator = () => {
   };
 
   return (
-    <div className={`container py-5 fade-in`}>
+    <div className="container py-5 fade-in">
       <Helmet>
         <title>Script Generator | StartMyDev</title>
-        <meta name="description" content="Generate custom windows and linux scripts for your development stack. Support for React, Angular, Spring Boot, Flask, and more." />
+        <meta name="description" content="Generate custom windows and linux scripts for your development stack." />
       </Helmet>
 
-      {/* Saved Configs Sidebar/Panel */}
-      {savedConfigs.length > 0 && (
-        <div className="mb-4 d-flex justify-content-between align-items-center">
-          <div className="d-flex gap-2 overflow-auto py-2 flex-grow-1">
-            {savedConfigs.map((config, index) => (
-              <div key={index} className={`card p-2 px-3 flex-row align-items-center gap-2 shadow-sm border-0 ${darkMode ? 'bg-secondary text-white' : 'bg-light'}`} style={{ minWidth: 'fit-content' }}>
-                <span className="fw-bold small" style={{ cursor: 'pointer' }} onClick={() => loadConfig(config)}>{config.name}</span>
-                <FaTrash className="text-danger" style={{ cursor: 'pointer' }} onClick={() => deleteConfig(index)} size={12} />
-              </div>
-            ))}
-          </div>
-          <button className="btn btn-sm text-danger fw-bold ms-3" style={{ whiteSpace: 'nowrap' }} onClick={() => {
-            if (window.confirm("Are you sure you want to clear all saved configurations?")) {
-              setSavedConfigs([]);
-              localStorage.removeItem("startmydev_configs");
-              toast.success("All saved configurations cleared.");
-            }
-          }}>
-            Clear All
-          </button>
-        </div>
-      )}
-
       <div className="text-center mb-5">
-        <h1 className="fw-bold display-5">⚙️ StartMyDev Script Generator</h1>
-        <p className="lead fw-normal">
-          Quickly generate scripts to launch your frontend, backend,
-          or fullstack project in seconds.
+        <h1 className="display-4 fw-bold mb-3">
+          <span className="text-gradient">Automate Your Setup</span>
+        </h1>
+        <p className="lead text-muted mx-auto" style={{ maxWidth: '600px' }}>
+          Configure, generate, and launch your development environment in seconds.
         </p>
       </div>
 
-      <div className={`card shadow-lg border-0 rounded-4 p-4 ${darkMode ? 'bg-dark text-light border-secondary' : ''}`}>
-
-        {/* Header Actions */}
-        <div className="d-flex justify-content-end mb-3 gap-2">
-          <button className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" onClick={() => setShowSaveModal(true)}>
-            <FaSave /> Save Config
-          </button>
-        </div>
-
-        {/* OS Selection */}
-        <div className="mb-4">
-          <label className="form-label fw-bold">Operating System</label>
-          <div className="d-flex gap-4 flex-wrap">
-            {["windows", "linux", "mac"].map((os) => (
-              <div className="form-check" key={os}>
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="os"
-                  id={os}
-                  value={os}
-                  checked={form.os === os}
-                  onChange={handleChange}
-                  disabled={os !== "windows" && os !== "linux"}
-                />
-                <label
-                  className={`form-check-label ${os !== "windows" ? "text-muted" : ""
-                    }`}
-                  htmlFor={os}
-                >
-                  {os.charAt(0).toUpperCase() + os.slice(1)}{" "}
-                  {os !== "windows" && os !== "linux" && "(coming soon)"}
-                </label>
-              </div>
-            ))}
+      <div className="row g-4 justify-content-center">
+        {/* Saved Configs - New "Workspaces" Layout */}
+        <div className="col-12 mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="fw-bold m-0 d-flex align-items-center gap-2">
+              <FaSave className="text-primary" /> Saved Workspaces
+            </h5>
+            {savedConfigs.length > 0 && (
+              <button
+                className="btn btn-sm btn-link text-muted text-decoration-none"
+                onClick={() => {
+                  if (window.confirm("Clear all workspaces?")) {
+                    setSavedConfigs([]);
+                    localStorage.removeItem("startmydev_configs");
+                  }
+                }}
+              >
+                Clear All
+              </button>
+            )}
           </div>
-          <small className="text-muted">
-            Windows and Linux are supported.
-          </small>
-        </div>
 
-        {/* App Type + PowerShell */}
-        <div className="row mb-4">
-          <div className="col-md-6">
-            <label className="form-label fw-bold">Application Type</label>
-            <div className="d-flex gap-3 flex-wrap">
-              {["frontend", "backend", "fullstack"].map((type) => (
-                <div key={type} className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="applicationType"
-                    id={type}
-                    value={type}
-                    checked={form.applicationType === type}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </label>
-                </div>
-              ))}
+          {savedConfigs.length === 0 ? (
+            <div className={`p-4 rounded-4 border border-dashed text-center ${darkMode ? 'border-secondary' : 'border-light'}`}>
+              <p className="text-muted m-0 small">No saved workspaces yet. Configure below and save to get started.</p>
             </div>
-          </div>
-          {form.os === "windows" && (
-            <div className="col-md-6">
-              <label className="form-label fw-bold">
-                PowerShell Version (Windows Only)
-              </label>
-              <div className="d-flex gap-3">
-                {["5", "7"].map((ver) => (
-                  <div key={ver} className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="powershellVersion"
-                      id={`ps${ver}`}
-                      value={ver}
-                      checked={form.powershellVersion === ver}
-                      onChange={handleChange}
-                    />
-                    <label className="form-check-label" htmlFor={`ps${ver}`}>
-                      PowerShell {ver}
-                    </label>
+          ) : (
+            <div className="row g-3">
+              {savedConfigs.map((config, index) => (
+                <div key={index} className="col-md-3 col-sm-6">
+                  <div
+                    className={`card h-100 p-3 border-0 shadow-sm hover-lift workspace-card cursor-pointer position-relative overflow-hidden ${darkMode ? 'bg-surface-dark' : 'bg-surface-light'}`}
+                    onClick={() => loadConfig(config)}
+                  >
+                    <div className="position-absolute top-0 start-0 w-1 h-100 bg-primary"></div>
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <span className="fw-bold text-truncate" title={config.name}>{config.name}</span>
+                      <button
+                        className="btn btn-sm btn-icon p-0 text-muted hover-danger"
+                        onClick={(e) => deleteConfig(e, index)}
+                        title="Delete Workspace"
+                      >
+                        <FaTrash size={12} />
+                      </button>
+                    </div>
+                    <div className="small text-muted mb-1">
+                      {config.config.os === 'windows' ? <FaWindows className="me-1" /> : <FaLinux className="me-1" />}
+                      {config.config.projectType}
+                    </div>
+                    <div className="mt-auto pt-2 border-top border-light-subtle d-flex justify-content-between align-items-center">
+                      <span className="badge bg-primary-subtle text-primary rounded-pill" style={{ fontSize: '0.65rem' }}>
+                        {config.config.applicationType}
+                      </span>
+                      <small className="text-primary fw-bold" style={{ fontSize: '0.7rem' }}>Load →</small>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Project Type + Ports */}
-        <div className="row mb-4">
-          <div className="col-md-6">
-            <label className="form-label fw-bold">Project Type</label>
-            <div className="d-flex flex-wrap gap-3">
-              {getProjectTypeOptions().map((type) => (
-                <div key={type} className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="projectType"
-                    id={type}
-                    value={type}
-                    checked={form.projectType === type}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={type}>
-                    {type}
-                  </label>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Dynamic Port Inputs */}
-          {form.applicationType === "frontend" && (
-            <div className="col-md-6">
-              <label className="form-label fw-bold">
-                {getFrontendPortLabel()}{" "}
-              </label>
-
-              <input
-                className="form-control"
-                name="frontendPort"
-                value={form.frontendPort}
-                onChange={handleChange}
-                placeholder="e.g., 3000"
-              />
-            </div>
-          )}
-          {form.applicationType === "backend" && (
-            <div className="col-md-6">
-              <label className="form-label fw-bold">
-                {getBackendPortLabel()}{" "}
-              </label>
-
-              <input
-                className="form-control"
-                name="backendPort"
-                value={form.backendPort}
-                onChange={handleChange}
-                placeholder="e.g., 8080"
-              />
-            </div>
-          )}
-          {form.applicationType === "fullstack" && (
-            <>
-              <div className="col-md-6">
-                <label className="form-label fw-bold">
-                  {getFrontendPortLabel()}{" "}
-                </label>
-
-                <input
-                  className="form-control"
-                  name="frontendPort"
-                  value={form.frontendPort}
-                  onChange={handleChange}
-                  placeholder="e.g., 3000"
-                />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label fw-bold">
-                  {getBackendPortLabel()}
-                </label>
-
-                <input
-                  className="form-control"
-                  name="backendPort"
-                  value={form.backendPort}
-                  onChange={handleChange}
-                  placeholder="e.g., 8080"
-                />
-              </div>
-            </>
           )}
         </div>
 
-        {/* Project Paths */}
-        <div className="row mb-4">
-          {isFrontend && (
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                {getFrontendPathLabel()}
-              </label>
-              <input
-                className="form-control"
-                name="frontendPath"
-                value={form.frontendPath}
-                onChange={handleChange}
-                placeholder="e.g., C:\\path\\to\\frontend"
-              />
-            </div>
-          )}
-          {isBackend && (
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">
-                {getBackendPathLabel()}
-              </label>
-              <input
-                className="form-control"
-                name="backendPath"
-                value={form.backendPath}
-                onChange={handleChange}
-                placeholder="e.g., C:\\path\\to\\backend"
-              />
-            </div>
-          )}
-        </div>
+        {/* Main Generator Card */}
+        <div className="col-lg-9">
+          <div className={`card shadow-lg border-0 rounded-4 overflow-hidden ${darkMode ? 'bg-surface-dark border-secondary' : 'bg-white'}`}>
+            <div className="p-1 bg-gradient-primary"></div> {/* Top accent line */}
 
-        {/* Spring Boot Extras */}
-        {(isSpringBoot || isFlask) && (
-          <div className="row mb-4">
-            {isSpringBoot && (
-              <>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label fw-bold">
-                    Java Path (optional)
-                  </label>
-                  <input
-                    className="form-control"
-                    name="javaPath"
-                    value={form.javaPath}
-                    onChange={handleChange}
-                    placeholder="Will use system default if not provided"
-                  />
+            <div className={`p-4 p-md-5 ${darkMode ? 'text-white' : ''}`}>
+
+              {/* Header with Save Button */}
+              <div className="d-flex justify-content-between align-items-center mb-5">
+                <h4 className="fw-bold m-0"><FaMagic className="me-2 text-primary" /> Configuration</h4>
+                <button className="btn btn-outline-primary btn-sm rounded-pill px-3" onClick={() => setShowSaveModal(true)}>
+                  <FaSave className="me-1" /> Save as Workspace
+                </button>
+              </div>
+
+              {/* OS Selection */}
+              <div className="mb-5">
+                <label className="form-label text-muted fw-bold small text-uppercase letter-spacing-1 mb-3">Operating System</label>
+                <div className="d-flex gap-3">
+                  {[
+                    { id: 'windows', icon: FaWindows, label: 'Windows' },
+                    { id: 'linux', icon: FaLinux, label: 'Linux (Bash)' },
+                    { id: 'mac', icon: FaApple, label: 'MacOS', disabled: true }
+                  ].map(os => (
+                    <div
+                      key={os.id}
+                      className={`os-card flex-grow-1 p-3 rounded-3 border text-center cursor-pointer transition-all ${form.os === os.id ? 'active-os border-primary bg-primary-subtle text-primary' :
+                        os.disabled ? 'opacity-50 cursor-not-allowed bg-light' : 'hover-border-primary'
+                        } ${darkMode && form.os !== os.id ? 'border-secondary bg-dark' : ''}`}
+                      onClick={() => !os.disabled && updateFormValue('os', os.id)}
+                    >
+                      <os.icon size={24} className="mb-2" />
+                      <div className="fw-semibold">{os.label}</div>
+                    </div>
+                  ))}
                 </div>
-                <div className="col-md-6 mb-3">
-                  <label className="form-label fw-bold">Spring Profile</label>
-                  <input
-                    className="form-control"
-                    name="springProfile"
-                    value={form.springProfile}
-                    onChange={handleChange}
-                    placeholder="e.g., local, dev, prod"
-                  />
-                </div>
-              </>
-            )}
-            {isFlask && (
-              <div className="col-md-6 mb-3">
-                <label className="form-label fw-bold">
-                  Python Path (optional)
-                </label>
-                <input
-                  className="form-control"
-                  name="pythonPath"
-                  value={form.pythonPath}
-                  onChange={handleChange}
-                  placeholder="Will use system default if not provided"
-                />
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Git Branch */}
-        <div className="row mb-4">
-          <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Git Branch (optional)</label>
-            <input
-              className="form-control"
-              name="gitBranch"
-              value={form.gitBranch}
-              onChange={handleChange}
-              placeholder="e.g., development, main"
-            />
-          </div>
-        </div>
+              {/* Application Stack */}
+              <div className="mb-5">
+                <label className="form-label text-muted fw-bold small text-uppercase letter-spacing-1 mb-3">Stack</label>
+                <div className="row g-3">
+                  {[
+                    { id: 'frontend', icon: FaLaptopCode, label: 'Frontend', desc: 'React, Angular' },
+                    { id: 'backend', icon: FaServer, label: 'Backend', desc: 'Spring Boot, Flask' },
+                    { id: 'fullstack', icon: FaLayerGroup, label: 'Fullstack', desc: 'Combined Architecture' }
+                  ].map(type => (
+                    <div className="col-md-4" key={type.id}>
+                      <div
+                        className={`h-100 p-3 rounded-3 border cursor-pointer transition-all ${form.applicationType === type.id ? 'border-primary bg-primary-subtle' : 'hover-border-primary'
+                          } ${darkMode && form.applicationType !== type.id ? 'border-secondary bg-dark' : ''}`}
+                        onClick={() => updateFormValue('applicationType', type.id)}
+                      >
+                        <div className={`d-flex align-items-center mb-2 ${form.applicationType === type.id ? 'text-primary' : ''}`}>
+                          <type.icon className="me-2" />
+                          <span className="fw-bold">{type.label}</span>
+                        </div>
+                        <small className="text-muted d-block">{type.desc}</small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-        {/* Submit & Preview Actions */}
-        <div className="d-flex justify-content-center gap-3 mt-5">
-          <button className="btn btn-lg btn-outline-secondary px-4 d-flex align-items-center gap-2" onClick={generatePreview}>
-            <FaEye /> Preview Script
-          </button>
-          <button className="btn btn-lg btn-primary px-5 d-flex align-items-center gap-2 shadow" onClick={handleSubmit}>
-            <FaTerminal /> Generate & Download
-          </button>
+              {/* Project Details Grid */}
+              <div className="row g-4 mb-4">
+                <div className="col-12">
+                  <label className="form-label text-muted fw-bold small text-uppercase letter-spacing-1">Technology</label>
+                  <select
+                    className="form-select form-select-lg"
+                    name="projectType"
+                    value={form.projectType}
+                    onChange={handleChange}
+                  >
+                    {getProjectTypeOptions().map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  </select>
+                </div>
+
+                {/* Conditional Fields based on selection */}
+                {form.applicationType === 'frontend' && (
+                  <>
+                    <div className="col-md-8">
+                      <label className="form-label fw-semibold">{getFrontendPathLabel()}</label>
+                      <input className="form-control" name="frontendPath" value={form.frontendPath} onChange={handleChange} placeholder="Absolute path to project" />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label fw-semibold">{getFrontendPortLabel()}</label>
+                      <input className="form-control" name="frontendPort" value={form.frontendPort} onChange={handleChange} placeholder="3000" />
+                    </div>
+                  </>
+                )}
+
+                {form.applicationType === 'backend' && (
+                  <>
+                    <div className="col-md-8">
+                      <label className="form-label fw-semibold">{getBackendPathLabel()}</label>
+                      <input className="form-control" name="backendPath" value={form.backendPath} onChange={handleChange} placeholder="Absolute path to project" />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label fw-semibold">{getBackendPortLabel()}</label>
+                      <input className="form-control" name="backendPort" value={form.backendPort} onChange={handleChange} placeholder="8080" />
+                    </div>
+                  </>
+                )}
+
+                {form.applicationType === 'fullstack' && (
+                  <>
+                    <div className="col-md-8">
+                      <label className="form-label fw-semibold">{getFrontendPathLabel()}</label>
+                      <input className="form-control" name="frontendPath" value={form.frontendPath} onChange={handleChange} placeholder="Path to frontend" />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label fw-semibold">{getFrontendPortLabel()}</label>
+                      <input className="form-control" name="frontendPort" value={form.frontendPort} onChange={handleChange} />
+                    </div>
+                    <div className="col-md-8">
+                      <label className="form-label fw-semibold">{getBackendPathLabel()}</label>
+                      <input className="form-control" name="backendPath" value={form.backendPath} onChange={handleChange} placeholder="Path to backend" />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label fw-semibold">{getBackendPortLabel()}</label>
+                      <input className="form-control" name="backendPort" value={form.backendPort} onChange={handleChange} />
+                    </div>
+                  </>
+                )}
+
+                {/* Extras */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Git Branch</label>
+                  <input className="form-control" name="gitBranch" value={form.gitBranch} onChange={handleChange} placeholder="development" />
+                </div>
+
+                {/* Spring Boot Extras */}
+                {isSpringBoot && (
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold">Spring Profile</label>
+                    <input className="form-control" name="springProfile" value={form.springProfile} onChange={handleChange} placeholder="local" />
+                  </div>
+                )}
+
+                {/* Windows PowerShell Version */}
+                {form.os === 'windows' && (
+                  <div className="col-12 mt-4">
+                    <label className="form-label fw-bold small text-uppercase text-muted">PowerShell Version</label>
+                    <div className="d-flex gap-3">
+                      {['5', '7'].map(v => (
+                        <div key={v} className="form-check">
+                          <input className="form-check-input" type="radio" name="powershellVersion" id={`ps${v}`} value={v} checked={form.powershellVersion === v} onChange={handleChange} />
+                          <label className="form-check-label" htmlFor={`ps${v}`}>PowerShell {v}</label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="d-flex flex-column flex-md-row justify-content-center gap-3 mt-5 pt-3 border-top border-light-subtle">
+                <button className="btn btn-lg btn-outline-secondary px-4 d-flex align-items-center justify-content-center gap-2" onClick={generatePreview}>
+                  <FaEye /> Preview
+                </button>
+                <button className="btn btn-lg btn-primary px-5 d-flex align-items-center justify-content-center gap-2 shadow hover-lift" onClick={handleSubmit}>
+                  <FaTerminal /> Generate Script
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Save Config Modal */}
-      <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)} centered>
-        <Modal.Header closeButton className={darkMode ? 'bg-dark text-white' : ''}>
-          <Modal.Title>Save Configuration</Modal.Title>
+      <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)} centered contentClassName={`rounded-4 border-0 ${darkMode ? 'bg-dark' : ''}`}>
+        <Modal.Header closeButton className={`border-0 border-bottom ${darkMode ? 'border-secondary' : ''}`}>
+          <Modal.Title className={darkMode ? 'text-white' : ''}>Save Configuration</Modal.Title>
         </Modal.Header>
-        <Modal.Body className={darkMode ? 'bg-dark text-white' : ''}>
+        <Modal.Body className={darkMode ? 'text-white' : ''}>
           <div className="mb-3">
             <label className="form-label">Configuration Name</label>
             <input type="text" className="form-control" value={configName} onChange={(e) => setConfigName(e.target.value)} placeholder="e.g. Work Backend" autoFocus />
+            <div className="form-text text-muted">This will save your current form state to your browser.</div>
           </div>
         </Modal.Body>
-        <Modal.Footer className={darkMode ? 'bg-dark text-white' : ''}>
-          <Button variant="secondary" onClick={() => setShowSaveModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleSaveConfig}>Save</Button>
+        <Modal.Footer className="border-0">
+          <Button variant="link" className="text-muted text-decoration-none" onClick={() => setShowSaveModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleSaveConfig}>Save Configuration</Button>
         </Modal.Footer>
       </Modal>
 
       {/* Preview Modal */}
       <Modal show={showPreview} onHide={() => setShowPreview(false)} size="lg" centered contentClassName="border-0 rounded-4 overflow-hidden">
         <Modal.Body className="p-0">
-          {/* Terminal Header */}
-          <div className="bg-dark text-white p-2 px-3 d-flex justify-content-between align-items-center">
+          <div className="bg-dark text-white p-3 d-flex justify-content-between align-items-center">
             <div className="d-flex gap-2">
               <div className="rounded-circle bg-danger" style={{ width: 12, height: 12 }}></div>
               <div className="rounded-circle bg-warning" style={{ width: 12, height: 12 }}></div>
               <div className="rounded-circle bg-success" style={{ width: 12, height: 12 }}></div>
             </div>
-            <div className="small opacity-50 font-monospace">
-              preview.{form.os === 'windows' ? 'ps1' : 'sh'}
-            </div>
-            <div style={{ width: 40 }}></div> {/* Spacer for centering */}
+            <div className="font-monospace small opacity-50">preview</div>
+            <FaCopy className="cursor-pointer hover-text-white" onClick={() => { navigator.clipboard.writeText(generatedScript); toast.success("Copied!"); }} />
           </div>
-
-          {/* Code Content */}
-          <div style={{ maxHeight: '60vh', overflow: 'auto' }} className={darkMode ? 'bg-dark' : 'bg-light'}>
-            <SyntaxHighlighter
-              language={form.os === 'windows' ? 'powershell' : 'bash'}
-              style={darkMode ? dracula : docco}
-              customStyle={{ margin: 0, padding: '20px', minHeight: '100%' }}
-            >
+          <div style={{ maxHeight: '60vh', overflow: 'auto', backgroundColor: '#282a36' }}>
+            <SyntaxHighlighter language={form.os === 'windows' ? 'powershell' : 'bash'} style={dracula} customStyle={{ margin: 0, padding: '20px' }}>
               {generatedScript}
             </SyntaxHighlighter>
           </div>
         </Modal.Body>
-        <Modal.Footer className={`border-top-0 p-3 ${darkMode ? 'bg-dark' : 'bg-light'}`}>
-          <Button variant="outline-secondary" onClick={() => {
-            navigator.clipboard.writeText(generatedScript);
-            toast.success("Copied to clipboard!");
-          }} className="d-flex align-items-center gap-2">
-            <FaCopy /> Copy Code
-          </Button>
-          <Button variant="primary" onClick={() => setShowPreview(false)}>Close</Button>
-        </Modal.Footer>
       </Modal>
 
+      <style>{`
+        .bg-surface-light { background-color: #f8f9fa; }
+        .bg-surface-dark { background-color: #1e2533; } /* Custom darker shade */
+        .hover-border-primary:hover { border-color: var(--color-primary) !important; color: var(--color-primary); }
+        .bg-gradient-primary { background: var(--gradient-primary); height: 4px; }
+        .bg-primary-subtle { background-color: rgba(79, 70, 229, 0.1) !important; }
+        .active-os { box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
+        .hover-danger:hover { color: #dc3545 !important; }
+        .workspace-card::before {
+           content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+           background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.05) 100%);
+           opacity: 0; transition: opacity 0.3s;
+        }
+        .workspace-card:hover::before { opacity: 1; }
+      `}</style>
     </div>
   );
 };

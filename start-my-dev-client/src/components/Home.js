@@ -230,7 +230,7 @@ const Home = () => {
           <p className="fw-semibold text-muted text-uppercase letter-spacing-2 mb-4">Supported Technologies</p>
           <div className="d-flex flex-wrap justify-content-center gap-3 gap-md-4 opacity-75">
             {["React", "Angular", "Spring Boot", "Flask", "Node.js", "PostgreSQL", "MongoDB"].map((tech) => (
-              <span key={tech} className="badge bg-body border text-body px-3 py-2 fw-normal fs-6">
+              <span key={tech} className="tech-badge badge rounded-pill px-4 py-2 fw-normal fs-6">
                 {tech}
               </span>
             ))}
@@ -309,6 +309,26 @@ const Home = () => {
         
         .dark-mode .bg-body-tertiary {
           background-color: rgba(255, 255, 255, 0.03) !important;
+        }
+
+        .tech-badge {
+          background-color: var(--color-surface-light);
+          color: var(--color-text-light);
+          border: 1px solid var(--color-border-light);
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .dark-mode .tech-badge {
+          background-color: rgba(255, 255, 255, 0.05);
+          color: var(--color-text-dark);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tech-badge:hover {
+          transform: translateY(-2px);
+          border-color: var(--color-primary);
+          box-shadow: 0 4px 8px rgba(79, 70, 229, 0.15);
         }
       `}</style>
     </div>
