@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaSun, FaMoon } from "react-icons/fa";
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const toggleTheme = () => setDarkMode((prev) => !prev);
 
@@ -16,18 +17,33 @@ const Header = () => {
     }
   }, [darkMode]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="py-3 border-bottom sticky-top header-theme fade-in">
+    <header
+      className={`py-3 border-bottom sticky-top header-theme fade-in ${scrolled ? "header-scrolled" : ""
+        }`}
+    >
       <div className="container-fluid d-flex justify-content-between align-items-center">
-        {/* Home navigation */}
+        {/* Logo & Brand */}
         <Link
           to="/"
-          className="d-flex align-items-center gap-2 text-decoration-none text-dark"
+          className="d-flex align-items-center gap-2 text-decoration-none logo-container"
         >
-          <img src={logo} alt="Logo" height="32" />
-          <h5 className="m-0 fw-bold">StartMyDev</h5>
+          <div className="logo-wrapper">
+            <img src={logo} alt="StartMyDev Logo" height="36" className="logo-img" />
+          </div>
+          <h5 className="m-0 fw-bold brand-name">StartMyDev</h5>
         </Link>
 
+        {/* Navigation & Actions */}
         <div className="d-flex align-items-center gap-3">
           {/* GitHub Link */}
           <a
@@ -35,45 +51,219 @@ const Header = () => {
             target="_blank"
             rel="noopener noreferrer"
             title="View on GitHub"
-            className="text-dark text-decoration-none hover-glow"
+            className="nav-icon-link"
           >
-            <FaGithub size={22} />
+            <FaGithub size={20} className="nav-icon" />
           </a>
 
           {/* Docs Link */}
-          <Link
-            to="/docs"
-            className="fw-semibold text-dark text-decoration-none hover-glow"
-          >
+          <Link to="/docs" className="nav-link-custom">
             Docs
           </Link>
 
           {/* Theme Toggle */}
           <button
-            className={`btn btn-sm rounded-pill px-3 ${
-              darkMode ? "btn-light" : "btn-dark"
-            }`}
+            className="theme-toggle-btn"
             onClick={toggleTheme}
+            aria-label="Toggle theme"
           >
-            {darkMode ? "☀ Light" : "🌙 Dark"}
+            <div className="theme-toggle-inner">
+              {darkMode ? (
+                <FaSun className="theme-icon" />
+              ) : (
+                <FaMoon className="theme-icon" />
+              )}
+            </div>
           </button>
         </div>
       </div>
 
-      {/* Scoped styles */}
+      {/* Scoped Styles */}
       <style>{`
+        /* Header Transitions */
+        .header-theme {
+          transition: all 0.25s ease;
+        }
+
+        .header-scrolled {
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark-mode .header-scrolled {
+          box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Logo - Subtle Animation */
+        .logo-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .logo-img {
+          transition: transform 0.3s ease;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-container:hover .logo-img {
+          transform: scale(1.05);
+        }
+
+        .brand-name {
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          font-size: 1.25rem;
+          letter-spacing: -0.01em;
+          font-family: 'Space Grotesk', 'Poppins', sans-serif;
+        }
+
+        .dark-mode .brand-name {
+          background: linear-gradient(135deg, #818cf8 0%, #c4b5fd 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        /* Navigation Icons */
+        .nav-icon-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          transition: all 0.25s ease;
+          text-decoration: none;
+        }
+
+        .nav-icon {
+          transition: transform 0.25s ease;
+        }
+
+        .nav-icon-link:hover {
+          background: rgba(79, 70, 229, 0.1);
+        }
+
+        .nav-icon-link:hover .nav-icon {
+          transform: scale(1.1);
+        }
+
+        .dark-mode .nav-icon-link:hover {
+          background: rgba(99, 102, 241, 0.15);
+        }
+
+        /* Navigation Link */
+        .nav-link-custom {
+          position: relative;
+          padding: 0.5rem 1rem;
+          font-weight: 600;
+          font-size: 0.95rem;
+          text-decoration: none;
+          border-radius: 8px;
+          transition: all 0.25s ease;
+        }
+
+        .nav-link-custom::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #4f46e5, #7c3aed);
+          transform: translateX(-50%);
+          transition: width 0.25s ease;
+        }
+
+        .nav-link-custom:hover {
+          background: rgba(79, 70, 229, 0.1);
+        }
+
+        .nav-link-custom:hover::after {
+          width: 70%;
+        }
+
+        .dark-mode .nav-link-custom:hover {
+          background: rgba(99, 102, 241, 0.15);
+        }
+
+        /* Theme Toggle Button - Refined */
+        .theme-toggle-btn {
+          width: 44px;
+          height: 44px;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .theme-toggle-inner {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+          transition: all 0.25s ease;
+        }
+
+        .theme-toggle-btn:hover .theme-toggle-inner {
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .theme-toggle-btn:active .theme-toggle-inner {
+          transform: scale(0.95);
+        }
+
+        .theme-icon {
+          color: white;
+          font-size: 1.1rem;
+          transition: transform 0.3s ease;
+        }
+
+        /* Fade In Animation */
         .fade-in {
-          animation: fadeIn 0.6s ease-in-out;
+          animation: fadeInHeader 0.5s ease-in-out;
         }
 
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInHeader {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        .hover-glow:hover {
-          text-shadow: 0 0 8px rgba(0,0,0,0.25);
-          transition: text-shadow 0.3s ease;
+        /* Responsive */
+        @media (max-width: 768px) {
+          .brand-name {
+            font-size: 1.1rem;
+          }
+
+          .nav-link-custom {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+          }
+
+          .theme-toggle-inner {
+            width: 36px;
+            height: 36px;
+          }
+
+          .theme-icon {
+            font-size: 1rem;
+          }
         }
       `}</style>
     </header>

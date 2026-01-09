@@ -30,7 +30,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`border-end p-3  d-${isSidebarOpen ? "block" : "none"} d-md-block`}
+        className={`sidebar-theme border-end p-3 d-${isSidebarOpen ? "block" : "none"} d-md-block`}
         style={{
           width: "250px",
           flexShrink: 0,
@@ -38,10 +38,13 @@ const Sidebar = () => {
           height: "100%",
         }}
       >
-        <h5 className="fw-bold">Documentation</h5>
+        <h5 className="fw-bold mb-3">Documentation</h5>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <NavLink to="/docs/getting-started" className="nav-link text-dark">
+            <NavLink
+              to="/docs/getting-started"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            >
               Getting Started
             </NavLink>
           </li>
@@ -49,7 +52,7 @@ const Sidebar = () => {
           {/* OS Dropdown: Windows */}
           <li className="nav-item">
             <p
-              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${isWindowsRoute ? "text-primary fw-semibold" : "text-dark"
+              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${isWindowsRoute ? "active fw-semibold" : ""
                 }`}
               style={{ cursor: "pointer" }}
               onClick={() => setShowWindows(!showWindows)}
@@ -64,8 +67,7 @@ const Sidebar = () => {
                   <NavLink
                     to="/docs/windows/ps5"
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"
-                      }`
+                      `nav-link ${isActive ? "active fw-semibold" : ""}`
                     }
                   >
                     Powershell-5
@@ -75,8 +77,7 @@ const Sidebar = () => {
                   <NavLink
                     to="/docs/windows/ps7"
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"
-                      }`
+                      `nav-link ${isActive ? "active fw-semibold" : ""}`
                     }
                   >
                     Powershell-7
@@ -89,7 +90,7 @@ const Sidebar = () => {
           {/* OS Dropdown: Linux */}
           <li className="nav-item">
             <p
-              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${isLinuxRoute ? "text-primary fw-semibold" : "text-dark"
+              className={`nav-link mb-0 d-flex justify-content-between align-items-center ${isLinuxRoute ? "active fw-semibold" : ""
                 }`}
               style={{ cursor: "pointer" }}
               onClick={() => setShowLinux(!showLinux)}
@@ -104,8 +105,7 @@ const Sidebar = () => {
                   <NavLink
                     to="/docs/linux"
                     className={({ isActive }) =>
-                      `nav-link ${isActive ? "text-primary fw-semibold" : "text-dark"
-                      }`
+                      `nav-link ${isActive ? "active fw-semibold" : ""}`
                     }
                   >
                     Bash Script
@@ -116,7 +116,10 @@ const Sidebar = () => {
           </li>
 
           <li className="nav-item">
-            <NavLink to="/docs/privacy-security" className="nav-link text-dark">
+            <NavLink
+              to="/docs/privacy-security"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            >
               Privacy & Security
             </NavLink>
           </li>
