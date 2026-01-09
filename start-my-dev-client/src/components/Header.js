@@ -119,6 +119,13 @@ const Header = () => {
           font-family: 'Space Grotesk', 'Poppins', sans-serif;
         }
 
+        .dark-mode .brand-name {
+          background: linear-gradient(135deg, #818cf8 0%, #c4b5fd 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
         /* Navigation Icons */
         .nav-icon-link {
           display: flex;

@@ -151,13 +151,23 @@
   color: var(--color-text-muted-dark) !important;
 }
 
+.dark-mode .text-dark {
+  color: var(--color-text-dark) !important;
+}
+
+.dark-mode .bg-light {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--color-text-dark) !important;
+}
+
 .dark-mode h1,
 .dark-mode h2,
 .dark-mode h3,
 .dark-mode h4,
 .dark-mode h5,
-.dark-mode h6 {
-  color: var(--color-text-dark);
+.dark-mode h6,
+.dark-mode .text-body {
+  color: var(--color-text-dark) !important;
 }
 
 /* ========================================
@@ -403,6 +413,13 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 700;
+}
+
+.dark-mode .text-gradient {
+  background: linear-gradient(135deg, #818cf8 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .text-gradient-secondary {

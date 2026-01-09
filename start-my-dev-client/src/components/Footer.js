@@ -72,6 +72,13 @@ const Footer = () => {
           background-clip: text;
         }
 
+        .dark-mode .brand-gradient {
+          background: linear-gradient(135deg, #818cf8 0%, #c4b5fd 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
         .footer-link {
           color: var(--color-text-muted-light);
           text-decoration: none;
